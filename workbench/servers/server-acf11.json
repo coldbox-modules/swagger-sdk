@@ -1,0 +1,17 @@
+{
+    "force":true,
+    "app":{
+        "cfengine":"adobe@11"
+    },
+    "openbrowser":"false",
+    "name":"acf11",
+    "web":{
+        "http":{
+            "port":"49611"
+        },
+        "webroot":"/Users/jonclausen/Sites/ortus/BoxModules/cbSwaggerSDK/"
+    },
+    "JVM":{
+        "heapSize":"2048"
+    }
+}

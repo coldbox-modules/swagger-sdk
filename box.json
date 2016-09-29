@@ -1,0 +1,18 @@
+{
+    "name":"SwaggerSDK-shell",
+    "version":"1.0.0",
+    "slug":"SwaggerSDK-shell",
+    "private":false,
+    "dependencies":{
+        "coldbox":"4.1.0+00002",
+        "cbjavaloader":">1.0.0"
+    },
+    "devDependencies":{
+        "testbox":"2.2.0"
+    },
+    "installPaths":{
+        "coldbox":"coldbox",
+        "testbox":"testbox",
+        "cbjavaloader":"modules/cbjavaloader"
+    }
+}
