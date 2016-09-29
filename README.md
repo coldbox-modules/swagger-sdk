@@ -1,4 +1,4 @@
-# cbSwaggerSDK
+# Coldbox Swagger SDK
 ## The Swagger Software Development Kit for the Coldbox Platform
 
 
