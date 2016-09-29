@@ -1,0 +1,36 @@
+{
+    "name":"swagger-sdk",
+    "shortDescription":"The Swagger Software Development Kit for the Coldbox Platform",
+    "version":"@build.version@+@build.number@",
+    "author":"Jon Clausen <jon_clausen@silowebworks.com>",
+    "slug":"swagger-sdk",
+    "type":"modules",
+    "keywords"  : "Swagger,OpenAPI,API Documentation",
+    "homepage"          : "https://github.com/coldbox-modules/swagger-sdk",
+    "documentation"     : "https://github.com/coldbox-modules/swagger-sdk/wiki",
+    "repository"        : { "type" : "git", "url" : "https://github.com/coldbox-modules/swagger-sdk" },
+    "bugs"              : "https://github.com/coldbox-modules/swagger-sdk/issues",
+    "license":[
+        {
+            "type":"Apache2",
+            "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    ],
+    "contributors":[
+        "Luis Majano <lmajano@ortussolutions.com>"
+    ],
+    "engines":[
+        {
+            "type":"railo",
+            "version":">4.1"
+        },
+        {
+            "type":"lucee",
+            "version":">4.5"
+        },
+        {
+            "type":"adobe",
+            "version":">9.02"
+        }
+    ]
+}

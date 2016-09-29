@@ -1,6 +1,6 @@
 {
     "name":"SwaggerSDK-shell",
-    "version":"1.0.0",
+    "version":"0.0.1",
     "slug":"SwaggerSDK-shell",
     "private":false,
     "dependencies":{
