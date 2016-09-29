@@ -3,6 +3,7 @@ language: java
 branches:
   only:
   - development
+  - test-Travis-CBBE
 
 sudo: required
 
