@@ -3,7 +3,7 @@ language: java
 branches:
   only:
   - development
-  - test-Travis-CBBE
+  - master
 
 sudo: required
 
@@ -24,6 +24,11 @@ install:
 script:
   - sudo ant -DisTravis=true -f workbench/build.xml
   
+before_deploy:
+  - mkdir s3deploy
+  - cp ./artifacts/cbSwaggerSDK/* ./s3deploy/
+  - rm -f ./s3deploy/box-repo.json
+
 deploy:
   on:
     branch: 
@@ -35,8 +40,8 @@ deploy:
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key: $AWS_ACCESS_SECRET
   bucket: "downloads.ortussolutions.com"
-  local-dir: artifacts
-  upload-dir: ortusssolutions/coldbox-modules/cbswaggersdk
+  local-dir: s3deploy
+  upload-dir: ortussolutions/coldbox-modules/cbswaggersdk
   acl: public_read
 
 notifications:
