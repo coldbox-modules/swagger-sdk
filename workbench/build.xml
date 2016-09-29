@@ -6,9 +6,11 @@
 	<property name="project.version" 	value="1.0.0"/>
 	<property name="groupID" 			value="ortussolutions" />
 
-	<condition property="isTravis.set" else="false">
+	<condition property="isTravis" else="false">
       <isset property="isTravis"/>
     </condition>
+
+    <echo>isTravis = ${isTravis}</echo>
 
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
@@ -109,7 +111,7 @@
 				  latest="${project.version}"
 				  classifiers="apidocs"/>
 				  
-		<!-- Cleanup -->
+		<!-- Cleanup -->	
 		<delete dir="${dir.build}" />
 	</target>
 

@@ -24,10 +24,6 @@ install:
 script:
   - sudo ant -DisTravis=true -f workbench/build.xml
   
-before_deploy:
-  - mkdir s3deploy
-  - cp build/*.zip s3deploy/
-  
 deploy:
   on:
     branch: 
@@ -39,7 +35,7 @@ deploy:
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key: $AWS_ACCESS_SECRET
   bucket: "downloads.ortussolutions.com"
-  local-dir: s3deploy
+  local-dir: artifacts
   upload-dir: ortusssolutions/coldbox-modules/cbswaggersdk
   acl: public_read
 
