@@ -53,6 +53,7 @@ component{
 		//models.Mongo.Util
 		binder.map( "OpenAPIUtil@SwaggerSDK" )
 			.to( "#moduleMapping#.models.OpenAPI.Util" )
+			.mixins( '/#this.cfmapping#/models/mixins/hashMap.cfm' )
 			.asSingleton();
 
 

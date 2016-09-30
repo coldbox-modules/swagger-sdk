@@ -10,6 +10,80 @@ component name="OpenAPIUtil" accessors="true" {
 		return this;
 	}
 
+	any function newTemplate(){
+		//We need to use Linked Hashmaps to maintain struct order for serialization and deserialization
+		var template = createLinkedHashMap();
+
+		var templateDefaults = [ 
+		{"swagger": "2.0"},
+		{
+		  "info": {
+		      "version": "",
+		      "title": "",
+		      "description": "",
+		      "termsOfService": "",
+		      "contact": createLinkedHashMap(),
+		      "license": createLinkedHashMap()
+		    }
+		},
+		{"host": ""},
+		{"basePath": ""},
+		{"schemes": []},
+		{"consumes": ["application/json","multipart/form-data","application/x-www-form-urlencoded"]},
+		{"produces": ["application/json"]},
+		{"paths": createLinkedHashMap()}
+
+		];
+
+		for( var templateDefault  in  templateDefaults ){
+			template.putAll( templateDefault );
+		}
+
+		return template;
+	}
+
+	any function newMethod(){
+		var method = createLinkedHashMap();
+		var descMap = createLinkedHashMap();
+		descMap.put( "description", "" );
+		var methodDefaults = [ 
+			{"description": ""},
+			{"operationId": ""},
+			{"parameters": []},
+			{
+				"responses": {
+					"default": descMap
+				}
+			}
+		];
+
+		for( var methodDefault in methodDefaults ){
+			method.putAll( methodDefault );
+		}
+
+		return method;
+	}
+
+	any function defaultMethods(){
+		return [ "GET", "PUT", "POST" , "PATCH" , "DELETE" , "HEAD" ];
+	}
+
+	any function defaultSuccessResponses(){
+		return [ 200, 200, 201, 200, 204, 204 ];
+	}
+
+	string function translatePath( required string URLPath ){
+		var pathArray = listToArray( ARGUMENTS.URLPath, '/' );
+		for( var i=1; i <= arrayLen( pathArray ); i++ ){
+			if( left( pathArray[ i ], 1 ) == ':' ){
+				pathArray[ i ] = "{" & replace( pathArray[ i ], ":", "" ) & "}"
+			}
+		}
+
+		return "/" & arrayToList( pathArray, "/" );
+
+	}
+
 
 	/**
 	* Converts a Java object to native CFML structure
