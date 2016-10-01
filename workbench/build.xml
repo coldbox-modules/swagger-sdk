@@ -10,8 +10,6 @@
       <isset property="isTravis"/>
     </condition>
 
-    <echo>isTravis = ${isTravis}</echo>
-
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<path id="cp">
@@ -76,6 +74,8 @@
         </copy>
         <!-- Copy readme -->
         <copy todir="${dir.build}" encoding="UTF-8" file="readme.md" overwrite="true" />
+        <copy todir="${dir.build}" encoding="UTF-8" file="changelog.md" overwrite="true" />
+        <copy todir="${dir.build}" encoding="UTF-8" file="instructions.md" overwrite="true" />
         
         <!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.version@' replace="${project.version}" flags="ig" byline="true" encoding="UTF-8">
@@ -112,7 +112,12 @@
 				  classifiers="apidocs"/>
 				  
 		<!-- Cleanup -->	
-		<delete dir="${dir.build}" />
+		<if>
+			<equals arg1="$isTravis" arg2="false" />
+			<then>
+				<delete dir="${dir.build}" />
+			</then>
+		</if>
 	</target>
 
 	<!-- Build API Docs -->

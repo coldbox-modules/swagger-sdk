@@ -1,7 +1,7 @@
 # Coldbox Swagger SDK
 ## The Swagger Software Development Kit for the Coldbox Platform
 
-This module allows for software development using the Swagger/OpenAPI specification.
+This module allows for software development using the Swagger/OpenAPI specification and utilizes the [v3.0 OpenAPI Specification]([https://github.com/OAI/OpenAPI-Specification/blob/OpenAPI.next/versions/3.0.md])
 
 ##LICENSE
 Apache License, Version 2.0.
