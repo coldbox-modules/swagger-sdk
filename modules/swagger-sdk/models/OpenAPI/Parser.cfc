@@ -28,7 +28,9 @@ component name="OpenAPIParser" accessors="true" {
 			XPath="";
 		}
 
-		if( !fileExists( DocPath ) ) throw(  type="SwaggerSDK.ParserException", message="The APIDoc file #ARGUMENTS.APIDocPath# does not exist." )
+		if( left( DocPath, 4 ) != 'http' && !fileExists( DocPath ) ) {
+			throw(  type="SwaggerSDK.ParserException", message="The APIDoc file #ARGUMENTS.APIDocPath# does not exist." );
+		}
 
 		setBaseDocumentPath( DocPath );
 		setSchemaType( ucase( listLast( DocPath, '.' ) ) );
@@ -58,7 +60,14 @@ component name="OpenAPIParser" accessors="true" {
 				break;
 
 			case "json":
-				documentContent = fileRead( DocPath );
+				if( left( DocPath, 4 ) == 'http' ){
+					var req = new http();
+					req.setMethod( "GET" );
+					req.setURL( DocPath );
+					documentContent = req.send().getPrefix().filecontent;
+				} else{				
+					documentContent = fileRead( DocPath );	
+				}
 				
 				if( !isJSON( documentContent ) ) throwInvalidJSONException( documentContent );
 				
@@ -185,10 +194,18 @@ component name="OpenAPIParser" accessors="true" {
 		var ReferenceDocument = {};
 		
 		//Files receive a parser reference
-		if( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )){
+		if( left( FilePath, 4 ) == 'http'  ){
+			
+			var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  $ref );
+
+		} else if( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )){
 
 			var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
 		
+		} else if( len( FilePath ) && fileExists( expandPath( FilePath ) ) ) {
+
+			var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
+
 		} else if( len( FilePath ) && !fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )) {
 
 			throw( type="SwaggerSDK.ParserException", message="File #( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )# does not exist" );
