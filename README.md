@@ -1,13 +1,10 @@
 # Coldbox Swagger SDK
 ## The Swagger Software Development Kit for the Coldbox Platform
 
+This module allows for software development using the Swagger/OpenAPI specification.
 
 ##LICENSE
 Apache License, Version 2.0.
-
-
-This module allows for software development using the Swagger/OpenAPI specification.
-
 
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
