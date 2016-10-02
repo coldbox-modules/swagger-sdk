@@ -6,7 +6,7 @@
     "slug":"swagger-sdk",
     "type":"modules",
     "keywords"  : "Swagger,OpenAPI,API Documentation",
-    "location"          : "https://downloads.ortussolutions.com/ortussolutions/coldbox-modules/swagger-sdk/@build.version@/swagger-sdk-@build.version@.zip",
+    "location"          : "http://downloads.ortussolutions.com/ortussolutions/coldbox-modules/swagger-sdk/@build.version@/swagger-sdk-@build.version@.zip",
     "homepage"          : "https://github.com/coldbox-modules/swagger-sdk",
     "documentation"     : "https://github.com/coldbox-modules/swagger-sdk/wiki",
     "repository"        : { "type" : "git", "url" : "https://github.com/coldbox-modules/swagger-sdk" },
