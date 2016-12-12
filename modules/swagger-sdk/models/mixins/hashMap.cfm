@@ -4,7 +4,7 @@
 **/
 function createLinkedHashMap(){
 	if( !isNull( VARIABLES ) && structKeyExists( VARIABLES, "Controller" ) ){
-		var controller = VARIABLES.controller
+		var controller = VARIABLES.controller;
 	} else if( structKeyExists( APPLICATION, "cbController" ) ) {
 		var controller = application.cbController;
 	} else {
