@@ -52,9 +52,9 @@ component extends="BaseOpenAPISpec"{
 
 	function runParserTypeChecks( required Parser ){
 
-		expect( ARGUMENTS.Parser ).toBeInstanceOf( "Parser" );
+		expect( ARGUMENTS.Parser ).toBeInstanceOf( "SwaggerSDK.models.OpenAPI.Parser" );
 		expect( ARGUMENTS.Parser ).toHaveKey( "getDocumentObject" );
-		expect( ARGUMENTS.Parser.getDocumentObject() ).toBeInstanceOf( "Document" );
+		expect( ARGUMENTS.Parser.getDocumentObject() ).toBeInstanceOf( "SwaggerSDK.models.OpenAPI.Document" );
 		expect( ARGUMENTS.Parser ).toHaveKey( "getSchemaType" );
 		expect( ARGUMENTS.Parser.getSchemaType() ).toBeString();
 		expect( ARGUMENTS.Parser ).toHaveKey( "getBaseDocumentPath" );
