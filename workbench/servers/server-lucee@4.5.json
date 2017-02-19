@@ -9,8 +9,8 @@
         "http":{
             "port":"50680"
         },
-        "rewrites" : {
-            "enable" : true
+        "rewrites":{
+            "enable":true
         }
     },
     "name":"lucee@4.5"
