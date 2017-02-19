@@ -76,7 +76,7 @@ component name="OpenAPIUtil" accessors="true" {
 		var pathArray = listToArray( ARGUMENTS.URLPath, '/' );
 		for( var i=1; i <= arrayLen( pathArray ); i++ ){
 			if( left( pathArray[ i ], 1 ) == ':' ){
-				pathArray[ i ] = "{" & replace( pathArray[ i ], ":", "" ) & "}"
+				pathArray[ i ] = "{" & replace( pathArray[ i ], ":", "" ) & "}";
 			}
 		}
 

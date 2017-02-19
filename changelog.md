@@ -6,3 +6,6 @@ CHANGELOG
 
 ## 1.0.1
 * Adds $ref support for relative and remote ( http[s] )
+
+## 1.0.2
+* Adobe Coldfusion compatibility updates

@@ -12,6 +12,7 @@ tests/results/*
 apidocs/docbox/
 artifacts/
 workbench/build.number
+workbench/servers/.engine
 build/*
 modules/*
 !modules/swagger-sdk
