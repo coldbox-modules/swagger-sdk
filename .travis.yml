@@ -52,6 +52,7 @@ before_deploy:
   - rm -f ./s3deploy/box-repo.json
 
 deploy:
+  #Module Deployment
   - provider: s3
     on:
       branch: 
