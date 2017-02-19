@@ -182,7 +182,7 @@
 		<sleep seconds="5"/>
 		<!-- Get the apidocs now -->
 		<get dest="${dir.build}/docbox.html" 
-			 src="${url.apidocs}?version=${project.version}&amp;path=${dir.api}" 
+			 src="${url.apidocs}?version=${project.version}&amp;path=${dir.api}/${project.version}" 
 			 verbose="true"
 			 retries="5"/>
 		<!-- stop server -->

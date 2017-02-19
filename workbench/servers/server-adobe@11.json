@@ -10,9 +10,10 @@
         "http":{
             "port":"49611"
         },
-        "rewrites" : {
-            "enable" : true
-        }
+        "rewrites":{
+            "enable":true
+        },
+        "webroot":"/Users/jonclausen/Sites/ortus/BoxModules/cbSwaggerSDK/"
     },
     "JVM":{
         "heapSize":"1024"
