@@ -45,16 +45,13 @@ install:
 script:
   # run our dependency install to ensure the workbench is in place
   - box install
+  # add our module-specific build properties
+  - printf "\nproject.version=$MODULE_VERSION" >> workbench/build.properties
+  - printf "\nproject.name=$MODULE_ID" >> workbench/build.properties
+  - printf "\nmodule.name=$MODULE_ID" >> workbench/build.properties
+  - printf "\ncfengine=$ENGINE" >> workbench/build.properties
   # execute our build
-  - >
-    ant -DisTravis=true \
-    -Dproject.version=$MODULE_VERSION \
-    -Dproject.name=$MODULE_ID \
-    -Dmodule.name=$MODULE_ID \
-    -Dcfengine=$ENGINE \
-    -Dbuild.number=$TRAVIS_BUILD_NUMBER \
-    -Dbuild.branch=$TRAVIS_BRANCH \
-    -f workbench/build.xml
+  - ant -DisTravis=true -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f workbench/build.xml
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
