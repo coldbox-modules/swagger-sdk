@@ -46,8 +46,8 @@ script:
   # run our dependency install to ensure the workbench is in place
   - box install
   # execute our build
-  - ant \
-    -DisTravis=true \
+  - >
+    ant -DisTravis=true \
     -Dproject.version=$MODULE_VERSION \
     -Dproject.name=$MODULE_ID \
     -Dmodule.name=$MODULE_ID \
