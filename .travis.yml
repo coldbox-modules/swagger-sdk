@@ -43,6 +43,9 @@ install:
 
 # Build script - note module versioning is passed to ANT
 script:
+  # run our dependency install to ensure the workbench is in place
+  - box install
+  # execute our build
   - ant \
     -DisTravis=true \
     -Dproject.version=$MODULE_VERSION \
