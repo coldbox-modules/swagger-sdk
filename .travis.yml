@@ -40,8 +40,6 @@ install:
   # Setup for our tests
   - mkdir tests/results
   - sudo chmod -R 775 tests/results
-  # Clone our unified workbench until COMMANDBOX-577 is resolved
-  - git clone https://github.com/Ortus-Solutions/unified-workbench.git workbench
 
 # Build script - note module versioning is passed to ANT
 script:
