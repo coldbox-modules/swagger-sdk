@@ -76,7 +76,10 @@ component name="OpenAPIParser" accessors="true" {
 				break;
 
 			default:
-				throw( type="SwaggerSDK.ParserException", message="SwaggerSDK does not support schema using the .#lcase(getSchemaType())# file extension." );
+				throw( 
+					type="SwaggerSDK.ParserException", 
+					message="SwaggerSDK does not support schema using the .#lcase(getSchemaType())# file extension." 
+				);
 		}
 
 		return parse( documentContent , XPath );
@@ -96,7 +99,9 @@ component name="OpenAPIParser" accessors="true" {
 		var Document = getDocumentObject().getDocument();
 
 		for( var key in Document ){
-			Document[ key ] = parseDocumentReferences( Document[ key ] );
+			if( isSimpleValue( key ) ){			
+				Document[ key ] = parseDocumentReferences( Document[ key ] );	
+			}
 		}
 
 		return this;
@@ -143,9 +148,13 @@ component name="OpenAPIParser" accessors="true" {
 					&& 
 					structKeyExists( DocItem[ key ], "$ref" ) 
 				) {
+					
 					DocItem[ key ] = fetchDocumentReference( DocItem[ key ][ "$ref" ] );
+				
 				} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
+				
 					DocItem[ key ] = parseDocumentReferences( DocItem[ key ] );
+				
 				}
 				
 			}
@@ -193,33 +202,44 @@ component name="OpenAPIParser" accessors="true" {
 
 		var ReferenceDocument = {};
 		
-		//Files receive a parser reference
-		if( left( FilePath, 4 ) == 'http'  ){
+		try{
 			
-			var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  $ref );
+			//Files receive a parser reference
+			if( left( FilePath, 4 ) == 'http'  ){
+				
+				var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  $ref );
 
-		} else if( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )){
+			} else if( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )){
 
-			var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
-		
-		} else if( len( FilePath ) && fileExists( expandPath( FilePath ) ) ) {
+				var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
+			
+			} else if( len( FilePath ) && fileExists( expandPath( FilePath ) ) ) {
 
-			var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
+				var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
 
-		} else if( len( FilePath ) && !fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )) {
+			} else if( len( FilePath ) && !fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )) {
 
-			throw( type="SwaggerSDK.ParserException", message="File #( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )# does not exist" );
+				throw( type="SwaggerSDK.ParserException", message="File #( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )# does not exist" );
 
-		} else if( !isNull( XPath )  && len( XPath ) ) {
+			} else if( !isNull( XPath )  && len( XPath ) ) {
 
-			var ReferenceDocument = getInternalXPath( XPath );	
+				var ReferenceDocument = getInternalXPath( XPath );	
 
-		} else {
+			} else {
 
-			throw( type="SwaggerSDK.ParserException", message="The $ref #$ref# could not be resolved as either an internal or external reference");
+				throw( type="SwaggerSDK.ParserException", message="The $ref #$ref# could not be resolved as either an internal or external reference");
+
+			}
+
+		} catch( any e ){
+
+			throw( 
+				type="CBSwagger.InvalidReferenceDocumentException",
+				message="The $ref file pointer of #$ref# could not be loaded and parsed as a valid object.  If your $ref file content is an array, please nest the array within an object as a named key."
+			);
 
 		}
-
+		
 		return ReferenceDocument;
 	}
 
