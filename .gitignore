@@ -11,8 +11,7 @@ settings.xml
 tests/results/*
 apidocs/docbox/
 artifacts/
-workbench/build.number
-workbench/servers/.engine
+workbench/
 build/*
 modules/*
 !modules/swagger-sdk

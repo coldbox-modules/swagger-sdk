@@ -25,7 +25,9 @@ component name="OpenAPIDocument" accessors="true" {
 			zoomToXPath();
 		}
 
-		setResourceIds( getDocument() );
+		if( isStruct( getDocument() ) ){
+			setResourceIds( getDocument() );
+		}
 		
 		return this;
 	}
@@ -114,7 +116,11 @@ component name="OpenAPIDocument" accessors="true" {
 	* Normalizes the document recursively to provide a flattened representation
 	* @param APIDoc 	The document to normalized.  Defaults to the entity document
 	**/
-	public function getNormalizedDocument(struct APIDoc=this.getDocument()){
+	public function getNormalizedDocument(any APIDoc=this.getDocument()){
+
+		if( isArray( APIDoc ) ){
+			 return APIDoc;
+		}
 		
 		var NormalizedDoc = structCopy( ARGUMENTS.APIDoc );
 
