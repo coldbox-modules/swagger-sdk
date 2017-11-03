@@ -14,24 +14,25 @@ component name="OpenAPIUtil" accessors="true" {
 		//We need to use Linked Hashmaps to maintain struct order for serialization and deserialization
 		var template = createLinkedHashMap();
 
-		var templateDefaults  = [ 
-		{"swagger"            : "2.0"},
-		{
-		  "info"              : {
-		      "version"       : "",
-		      "title"         : "",
-		      "description"   : "",
-		      "termsOfService": "",
-		      "contact"       : createLinkedHashMap(),
-		      "license"       : createLinkedHashMap()
-		    }
-		},
-		{"host"               : ""},
-		{"basePath"           : ""},
-		{"schemes"            : []},
-		{"consumes"           : ["application/json","multipart/form-data","application/x-www-form-urlencoded"]},
-		{"produces"           : ["application/json"]},
-		{"paths"              : createLinkedHashMap()}
+			var templateDefaults  = [ 
+			{"swagger"            : "2.0"},
+			{
+			  "info"              : {
+			      "version"       : "",
+			      "title"         : "",
+			      "description"   : "",
+			      "termsOfService": "",
+			      "contact"       : createLinkedHashMap(),
+			      "license"       : createLinkedHashMap()
+			    }
+			},
+			{"host"               : ""},
+			{"basePath"           : ""},
+			{"schemes"            : []},
+			{"consumes"           : ["application/json","multipart/form-data","application/x-www-form-urlencoded"]},
+			{"produces"           : ["application/json"]},
+			{"paths"              : createLinkedHashMap()},
+			{"securityDefinitions": createLinkedHashMap()}
 
 		];
 
