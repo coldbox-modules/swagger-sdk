@@ -13,3 +13,4 @@ CHANGELOG
 
 ## 1.0.4
 *  Adds security definitions to default template 
+*  Adds summary as default new method key ( improves Postman compat ) 
