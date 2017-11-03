@@ -48,9 +48,10 @@ component name="OpenAPIUtil" accessors="true" {
 		var descMap = createLinkedHashMap();
 		descMap.put( "description", "" );
 		var methodDefaults   = [ 
-			{"description"   : ""},
-			{"operationId"   : ""},
-			{"parameters"    : []},
+			{"summary"    : ""},
+			{"description": ""},
+			{"operationId": ""},
+			{"parameters" : []},
 			{
 				"responses"  : {
 					"default": descMap
