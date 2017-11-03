@@ -9,3 +9,7 @@ CHANGELOG
 
 ## 1.0.2
 * Adobe Coldfusion compatibility updates
+
+
+## 1.0.4
+*  Adds security definitions to default template 
