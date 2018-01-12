@@ -33,14 +33,6 @@ component{
 	* Fired when the module is registered and activated.
 	*/
 	function onLoad(){
-
-		var configSettings = controller.getConfigSettings();
-
-		//ensure cbjavaloader is an activated module
-		if(!Wirebox.getColdbox().getModuleService().isModuleActive('cbjavaloader')){
-			Wirebox.getColdbox().getModuleService().reload('cbjavaloader');	
-		}
-		
 		
 		// load jars
 		wirebox.getInstance("loader@cbjavaloader").appendPaths( modulePath & "/lib");
