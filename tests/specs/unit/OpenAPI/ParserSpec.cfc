@@ -90,7 +90,9 @@ component extends="BaseOpenAPISpec"{
 			expect( NormalizedDocument ).toHaveKey( "openapi" );
 			expect( NormalizedDocument ).toHaveKey( "servers" );
 			expect( NormalizedDocument ).toHaveKey( "info" );
-			expect( NormalizedDocument ).toHaveKey( "components" );
+			if(Parser.getSchemaType() eq "YAML")
+				expect( NormalizedDocument ).toHaveKey( "components" );
+				
 			expect( NormalizedDocument ).toHaveKey( "paths" );
 
 			expect( NormalizedDocument ).toHaveDeepKey( "/pets" );
