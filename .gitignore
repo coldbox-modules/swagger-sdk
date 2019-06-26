@@ -17,3 +17,4 @@ modules/*
 !modules/swagger-sdk
 coldbox
 testbox
+.vscode/settings.json

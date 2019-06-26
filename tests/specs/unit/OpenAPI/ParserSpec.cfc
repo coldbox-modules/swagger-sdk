@@ -75,6 +75,7 @@ component extends="BaseOpenAPISpec"{
 				expect( APIDoc ).toBeStruct();
 				expect( APIDoc ).toHaveKey( "paths" );
 				expect( APIDoc.paths ).toHaveKey( "/pets" );
+				
 				expect( APIDoc.paths[ "/pets" ] ).toBeInstanceOf( "Parser" );
 				runParserTypeChecks( APIDoc.paths[ "/pets" ] );
 
@@ -86,13 +87,12 @@ component extends="BaseOpenAPISpec"{
 			var NormalizedDocument = Parser.getNormalizedDocument();
 
 			expect( NormalizedDocument ).toBeStruct();
-			expect( NormalizedDocument ).toHaveKey( "swagger" );
-			expect( NormalizedDocument ).toHaveKey( "host" );
+			expect( NormalizedDocument ).toHaveKey( "openapi" );
+			expect( NormalizedDocument ).toHaveKey( "servers" );
 			expect( NormalizedDocument ).toHaveKey( "info" );
-			expect( NormalizedDocument ).toHaveKey( "basePath" );
-			expect( NormalizedDocument ).toHaveKey( "schemes" );
-			expect( NormalizedDocument ).toHaveKey( "consumes" );
-			expect( NormalizedDocument ).toHaveKey( "produces" );
+			if(Parser.getSchemaType() eq "YAML")
+				expect( NormalizedDocument ).toHaveKey( "components" );
+				
 			expect( NormalizedDocument ).toHaveKey( "paths" );
 
 			expect( NormalizedDocument ).toHaveDeepKey( "/pets" );
@@ -101,11 +101,11 @@ component extends="BaseOpenAPISpec"{
 			expect( NormalizedDocument.paths[ '/pets' ] ).toHaveDeepKey( "parameters" );
 			expect( NormalizedDocument.paths[ '/pets' ] ).toHaveDeepKey( "responses" );
 
-			expect( NormalizedDocument ).toHaveDeepKey( "/pets/{id}" );
-			expect( NormalizedDocument.paths[ '/pets/{id}' ] ).toBeStruct();
-			expect( NormalizedDocument.paths[ '/pets/{id}' ] ).toHaveDeepKey( "description" );
-			expect( NormalizedDocument.paths[ '/pets/{id}' ] ).toHaveDeepKey( "parameters" );
-			expect( NormalizedDocument.paths[ '/pets/{id}' ] ).toHaveDeepKey( "responses" );
+			expect( NormalizedDocument ).toHaveDeepKey( "/pets/{petId}" );
+			expect( NormalizedDocument.paths[ '/pets/{petId}' ] ).toBeStruct();
+			expect( NormalizedDocument.paths[ '/pets/{petId}' ] ).toHaveDeepKey( "description" );
+			expect( NormalizedDocument.paths[ '/pets/{petId}' ] ).toHaveDeepKey( "parameters" );
+			expect( NormalizedDocument.paths[ '/pets/{petId}' ] ).toHaveDeepKey( "responses" );
 
 			expect( arrayLen( structFindKey( NormalizedDocument, "$ref" ) ) ).toBe( 0 );
 			

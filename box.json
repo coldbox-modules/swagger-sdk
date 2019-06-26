@@ -1,10 +1,10 @@
 {
     "name"            : "SwaggerSDK-shell",
-    "version"         : "0.0.1",
+    "version"         : "1.0.0",
     "slug"            : "SwaggerSDK-shell",
     "private"         : false,
     "dependencies"    : {
-            "coldbox"     : "4.1.0+00002",
+            "coldbox"     : ">4.1.0",
             "cbjavaloader": ">1.0.0",
             "workbench"   : "git+https://github.com/Ortus-Solutions/unified-workbench.git"
     },

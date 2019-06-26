@@ -13,9 +13,8 @@ component name="OpenAPIUtil" accessors="true" {
 	any function newTemplate(){
 		//We need to use Linked Hashmaps to maintain struct order for serialization and deserialization
 		var template = createLinkedHashMap();
-
 			var templateDefaults  = [ 
-			{"swagger"            : "2.0"},
+			{"openapi"            : "3.0.2"},
 			{
 			  "info"              : {
 			      "version"       : "",
@@ -26,13 +25,15 @@ component name="OpenAPIUtil" accessors="true" {
 			      "license"       : createLinkedHashMap()
 			    }
 			},
-			{"host"               : ""},
-			{"basePath"           : ""},
-			{"schemes"            : []},
-			{"consumes"           : ["application/json","multipart/form-data","application/x-www-form-urlencoded"]},
-			{"produces"           : ["application/json"]},
+			{"servers":[]},
 			{"paths"              : createLinkedHashMap()},
-			{"securityDefinitions": createLinkedHashMap()}
+			{"security": []},
+			{
+				"externalDocs": {
+					"description": "",
+  					"url": ""
+				}
+			}
 
 		];
 
@@ -44,13 +45,15 @@ component name="OpenAPIUtil" accessors="true" {
 	}
 
 	any function newMethod(){
-		var method = createLinkedHashMap();
+		var method = createLinkedHashMap();	
 		var descMap = createLinkedHashMap();
 		descMap.put( "description", "" );
+		//Other supported options are requestBody and tag will be added runtime
 		var methodDefaults   = [ 
-			{"description"   : ""},
-			{"operationId"   : ""},
-			{"parameters"    : []},
+			{"summary"    : ""},
+			{"description": ""},
+			{"operationId": ""},
+			{"parameters" : []},
 			{
 				"responses"  : {
 					"default": descMap
