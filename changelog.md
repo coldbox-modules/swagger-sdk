@@ -2,9 +2,11 @@
 
 ## v2.0.0
 
-* Open API support instead of swagger
+* Open API 3.02 support instead of swagger
 * New template layout
 * Engine removals: lucee4.5, ACF10, ACF11
+* Upgraded jackson-core to latest v2.9.9
+* Upgraded snakeyaml to latest v1.24
 
 ## v1.0.4
 
