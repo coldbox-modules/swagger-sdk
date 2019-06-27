@@ -10,6 +10,7 @@
 * Added more tests
 * Added ability to chain methods on all methods that where void before.
 * `document.asYAML()` is not fully implemented so you can convert the document to yaml.
+* Upgraded `createLinkedHashMap()` to use new ACF `structNew( "ordered" )` instead.
 
 ## v1.0.4
 

@@ -6,13 +6,19 @@
 */
 component name="OpenAPIUtil" accessors="true" {
 
-	public function init(){
+	/**
+	 * Constructor
+	 */
+	function init(){
 		return this;
 	}
 
+	/**
+	 * Generate a new template for the Open API spec
+	 */
 	any function newTemplate(){
 		//We need to use Linked Hashmaps to maintain struct order for serialization and deserialization
-		var template = createLinkedHashMap();
+		var template = structNew( "ordered" );
 			var templateDefaults  = [
 			{"openapi"            : "3.0.2"},
 			{
@@ -21,12 +27,12 @@ component name="OpenAPIUtil" accessors="true" {
 			      "title"         : "",
 			      "description"   : "",
 			      "termsOfService": "",
-			      "contact"       : createLinkedHashMap(),
-			      "license"       : createLinkedHashMap()
+			      "contact"       : structNew( "ordered" ),
+			      "license"       : structNew( "ordered" )
 			    }
 			},
 			{"servers":[]},
-			{"paths"              : createLinkedHashMap()},
+			{"paths"              : structNew( "ordered" )},
 			{"security": []},
 			{
 				"externalDocs": {
@@ -44,9 +50,12 @@ component name="OpenAPIUtil" accessors="true" {
 		return template;
 	}
 
+	/**
+	 * Create a new method representation
+	 */
 	any function newMethod(){
-		var method = createLinkedHashMap();
-		var descMap = createLinkedHashMap();
+		var method = structNew( "ordered" );
+		var descMap = structNew( "ordered" );
 		descMap.put( "description", "" );
 		//Other supported options are requestBody and tag will be added runtime
 		var methodDefaults   = [
@@ -68,14 +77,25 @@ component name="OpenAPIUtil" accessors="true" {
 		return method;
 	}
 
-	any function defaultMethods(){
+	/**
+	 * Get an array of default methods
+	 */
+	array function defaultMethods(){
 		return [ "GET", "PUT", "POST" , "PATCH" , "DELETE" , "HEAD" ];
 	}
 
-	any function defaultSuccessResponses(){
+	/**
+	 * Get an array of default response codes
+	 */
+	array function defaultSuccessResponses(){
 		return [ 200, 200, 201, 200, 204, 204 ];
 	}
 
+	/**
+	 * Translate path from URL Path
+	 *
+	 * @URLPath
+	 */
 	string function translatePath( required string URLPath ){
 		var pathArray = listToArray( arguments.URLPath, '/' );
 		for( var i=1; i <= arrayLen( pathArray ); i++ ){
@@ -88,23 +108,23 @@ component name="OpenAPIUtil" accessors="true" {
 
 	}
 
-
 	/**
-	* Converts a Java object to native CFML structure
-	* @param Object Map  	The Java map object or array to be converted
-	*/
-	function toCF( Map ){
+	 * Converts a Java object to native CFML structure
+	 *
+	 * @param Object Map  	The Java map object or array to be converted
+	 */
+	function toCF( map ){
 
-		if(isNull( Map )) return;
+		if( isNull( arguments.map ) ) return;
 
 		//if we're in a loop iteration and the array item is simple, return it
-		if(isSimpleValue( Map )) return Map;
+		if( isSimpleValue( arguments.map ) ) return arguments.map;
 
-		if(isArray( Map )){
+		if( isArray( map ) ){
 			var cfObj = [];
 
-			for(var obj in Map){
-				arrayAppend(cfObj,toCF(obj));
+			for( var obj in arguments.map ){
+				arrayAppend( cfObj, toCF( obj ) );
 			}
 
 		} else {
@@ -112,18 +132,22 @@ component name="OpenAPIUtil" accessors="true" {
 			var cfObj = {};
 
 			try{
-				cfObj.putAll( Map );
+				cfObj.putAll( arguments.map );
 
-			} catch (any e){
+			} catch ( any e ){
 
-				return Map;
+				return arguments.map;
 			}
 
-			//loop our keys to ensure first-level items with sub-documents objects are converted
-			for(var key in cfObj){
+			// loop our keys to ensure first-level items with sub-documents objects are converted
+			for( var key in cfObj ){
 
-				if(!isNull(cfObj[key]) && ( isArray(cfObj[key]) || isStruct(cfObj[key]) ) ) cfObj[key] = toCF(cfObj[key]);
-
+				if(
+					!isNull( cfObj[ key ] ) &&
+					( isArray( cfObj[ key ] ) || isStruct( cfObj[ key ] ) )
+				){
+					cfObj[ key ] = toCF( cfObj[ key ] );
+				}
 			}
 		}
 

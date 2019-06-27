@@ -120,7 +120,7 @@ component name="OpenAPIParser" accessors="true" {
 
 		var Parser = JSONFactory.createParser( arguments.JSONData );
 		var Mapper = jLoader.create( "java.util.Map" );
-		var HashMap = createLinkedHashMap();
+		var HashMap = structNew( "ordered" );
 
 		HashMap.putAll( deSerializeJSON( JSONData ) );
 	}

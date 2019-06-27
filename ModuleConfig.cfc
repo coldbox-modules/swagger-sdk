@@ -20,7 +20,7 @@ component {
 	// CF Mapping
 	this.cfmapping = "SwaggerSDK";
 	// Auto-map models
-	this.autoMapModels = true;
+	this.autoMapModels = false;
 	// Module Dependencies That Must Be Loaded First, use internal names or aliases
 	this.dependencies = [ "cbjavaloader" ];
 
