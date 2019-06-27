@@ -7,6 +7,9 @@
 * Engine removals: lucee4.5, ACF10, ACF11
 * Upgraded jackson-core to latest v2.9.9
 * Upgraded snakeyaml to latest v1.24
+* Added more tests
+* Added ability to chain methods on all methods that where void before.
+* `document.asYAML()` is not fully implemented so you can convert the document to yaml.
 
 ## v1.0.4
 

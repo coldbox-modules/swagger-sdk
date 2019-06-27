@@ -5,7 +5,7 @@
 * Open API Utilities
 */
 component name="OpenAPIUtil" accessors="true" {
-	
+
 	public function init(){
 		return this;
 	}
@@ -13,7 +13,7 @@ component name="OpenAPIUtil" accessors="true" {
 	any function newTemplate(){
 		//We need to use Linked Hashmaps to maintain struct order for serialization and deserialization
 		var template = createLinkedHashMap();
-			var templateDefaults  = [ 
+			var templateDefaults  = [
 			{"openapi"            : "3.0.2"},
 			{
 			  "info"              : {
@@ -45,11 +45,11 @@ component name="OpenAPIUtil" accessors="true" {
 	}
 
 	any function newMethod(){
-		var method = createLinkedHashMap();	
+		var method = createLinkedHashMap();
 		var descMap = createLinkedHashMap();
 		descMap.put( "description", "" );
 		//Other supported options are requestBody and tag will be added runtime
-		var methodDefaults   = [ 
+		var methodDefaults   = [
 			{"summary"    : ""},
 			{"description": ""},
 			{"operationId": ""},
@@ -77,7 +77,7 @@ component name="OpenAPIUtil" accessors="true" {
 	}
 
 	string function translatePath( required string URLPath ){
-		var pathArray = listToArray( ARGUMENTS.URLPath, '/' );
+		var pathArray = listToArray( arguments.URLPath, '/' );
 		for( var i=1; i <= arrayLen( pathArray ); i++ ){
 			if( left( pathArray[ i ], 1 ) == ':' ){
 				pathArray[ i ] = "{" & replace( pathArray[ i ], ":", "" ) & "}";
@@ -96,7 +96,7 @@ component name="OpenAPIUtil" accessors="true" {
 	function toCF( Map ){
 
 		if(isNull( Map )) return;
-		
+
 		//if we're in a loop iteration and the array item is simple, return it
 		if(isSimpleValue( Map )) return Map;
 
@@ -106,24 +106,24 @@ component name="OpenAPIUtil" accessors="true" {
 			for(var obj in Map){
 				arrayAppend(cfObj,toCF(obj));
 			}
-		
+
 		} else {
-		
+
 			var cfObj = {};
 
 			try{
 				cfObj.putAll( Map );
-			
+
 			} catch (any e){
-			
+
 				return Map;
 			}
-			
+
 			//loop our keys to ensure first-level items with sub-documents objects are converted
 			for(var key in cfObj){
-			
+
 				if(!isNull(cfObj[key]) && ( isArray(cfObj[key]) || isStruct(cfObj[key]) ) ) cfObj[key] = toCF(cfObj[key]);
-			
+
 			}
 		}
 

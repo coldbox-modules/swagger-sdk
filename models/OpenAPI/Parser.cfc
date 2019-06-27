@@ -18,8 +18,8 @@ component name="OpenAPIParser" accessors="true" {
 	* @param APIDocPath		The path of the top-level API description file.  Valid extensions: .json, .yaml, .json.cfm
 	**/
 	public function init( string APIDocPath ){
-		
-		var refArray = listToArray( ARGUMENTS.APIDocPath, chr( 35 ) );
+
+		var refArray = listToArray( arguments.APIDocPath, chr( 35 ) );
 
 		var DocPath = refArray[ 1 ];
 		if( arrayLen( refArray ) > 1 ) {
@@ -29,21 +29,21 @@ component name="OpenAPIParser" accessors="true" {
 		}
 
 		if( left( DocPath, 4 ) != 'http' && !fileExists( DocPath ) ) {
-			throw(  type="SwaggerSDK.ParserException", message="The APIDoc file #ARGUMENTS.APIDocPath# does not exist." );
+			throw(  type="SwaggerSDK.ParserException", message="The APIDoc file #arguments.APIDocPath# does not exist." );
 		}
 
 		setBaseDocumentPath( DocPath );
 		setSchemaType( ucase( listLast( DocPath, '.' ) ) );
-		
+
 		var documentContent = "";
-		
+
 		switch( getSchemaType() ){
 			case "cfm":
 				savecontent variable="documentContent" {
 					include APath;
 				}
 				if( !isJSON( trim( documentContent ) ) ) throwInvalidJSONException( documentContent );
-				
+
 				documentContent = serializeJSON( trim( documentContent ) );
 
 				break;
@@ -56,7 +56,7 @@ component name="OpenAPIParser" accessors="true" {
 				var InputStream = jLoader.create( "java.io.FileInputStream" ).init( IOFile );
 
 				documentContent = getUtils().toCF( YAMLLoader.load( InputStream ) );
-		
+
 				break;
 
 			case "json":
@@ -65,20 +65,20 @@ component name="OpenAPIParser" accessors="true" {
 					req.setMethod( "GET" );
 					req.setURL( DocPath );
 					documentContent = req.send().getPrefix().filecontent;
-				} else{				
-					documentContent = fileRead( DocPath );	
+				} else{
+					documentContent = fileRead( DocPath );
 				}
-				
+
 				if( !isJSON( documentContent ) ) throwInvalidJSONException( documentContent );
-				
+
 				documentContent = deSerializeJSON( documentContent );
 
 				break;
 
 			default:
-				throw( 
-					type="SwaggerSDK.ParserException", 
-					message="SwaggerSDK does not support schema using the .#lcase(getSchemaType())# file extension." 
+				throw(
+					type="SwaggerSDK.ParserException",
+					message="SwaggerSDK does not support schema using the .#lcase(getSchemaType())# file extension."
 				);
 		}
 
@@ -88,19 +88,19 @@ component name="OpenAPIParser" accessors="true" {
 
 	/**
 	* Parses an API Document recursively
-	* 
+	*
 	* @param APIDoc		The struct representation of the API Document
 	* @param [XPath]	The XPath to zoom the parsed document to during recursion
 	**/
 	public function parse( required struct APIDoc, required string XPath="" ){
 
-		setDocumentObject( getWirebox().getInstance( "OpenAPIDocument@SwaggerSDK" ).init( ARGUMENTS.APIDoc, ARGUMENTS.XPath) );
+		setDocumentObject( getWirebox().getInstance( "OpenAPIDocument@SwaggerSDK" ).init( arguments.APIDoc, arguments.XPath) );
 
 		var Document = getDocumentObject().getDocument();
 
 		for( var key in Document ){
-			if( isSimpleValue( key ) ){			
-				Document[ key ] = parseDocumentReferences( Document[ key ] );	
+			if( isSimpleValue( key ) ){
+				Document[ key ] = parseDocumentReferences( Document[ key ] );
 			}
 		}
 
@@ -109,7 +109,7 @@ component name="OpenAPIParser" accessors="true" {
 
 	/**
 	* Loads a linked hash map from a JSON file
-	* 
+	*
 	* @param JSONData	The raw JSON string
 	**/
 	private function loadAsLinkedHashMap( required string JSONData ){
@@ -118,21 +118,21 @@ component name="OpenAPIParser" accessors="true" {
 		var Codec = jLoader.create( "com.fasterxml.jackson.core.ObjectCodec" );
 		var CodecProxy = createObject("java", "coldfusion.runtime.java.JavaProxy" ).init( Codec );
 
-		var Parser = JSONFactory.createParser( ARGUMENTS.JSONData );
+		var Parser = JSONFactory.createParser( arguments.JSONData );
 		var Mapper = jLoader.create( "java.util.Map" );
 		var HashMap = createLinkedHashMap();
-		
-		HashMap.putAll( deSerializeJSON( JSONData ) );	
+
+		HashMap.putAll( deSerializeJSON( JSONData ) );
 	}
 
 	/**
 	* Parses API Document $ref notations recursively
-	* 
+	*
 	* @param APIDoc		The struct representation of the API Document
 	* @param [XPath]	The XPath to zoom the parsed document to during recursion
 	**/
 	public function parseDocumentReferences( required any DocItem ){
-		
+
 		if( isArray( DocItem ) ) {
 			for( var i = 1; i <= arrayLen( DocItem ); i++){
 				DocItem[ i ] = parseDocumentReferences( DocItem[ i ] );
@@ -142,21 +142,21 @@ component name="OpenAPIParser" accessors="true" {
 			if( structKeyExists( DocItem, "$ref" ) ) return fetchDocumentReference(DocItem[ "$ref" ]);
 
 			for( var key in DocItem){
-				
-				if( 
-					isStruct( DocItem[ key ] ) 
-					&& 
-					structKeyExists( DocItem[ key ], "$ref" ) 
+
+				if(
+					isStruct( DocItem[ key ] )
+					&&
+					structKeyExists( DocItem[ key ], "$ref" )
 				) {
-					
+
 					DocItem[ key ] = fetchDocumentReference( DocItem[ key ][ "$ref" ] );
-				
+
 				} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
-				
+
 					DocItem[ key ] = parseDocumentReferences( DocItem[ key ] );
-				
+
 				}
-				
+
 			}
 		}
 
@@ -166,7 +166,7 @@ component name="OpenAPIParser" accessors="true" {
 
 	/**
 	* Retrieves the value from a nested struc when given an XPath argument
-	* 
+	*
 	* @param XPath	The XPath to zoom the parsed document to during recursion
 	**/
 	public function getInternalXPath( required string XPath ){
@@ -186,7 +186,7 @@ component name="OpenAPIParser" accessors="true" {
 	* @param $ref 	The $ref value
 	**/
 	private function fetchDocumentReference( required string $ref ){
-		
+
 		//resolve internal refrences before looking for externals
 		if( left( $ref, 1 ) == chr( 35 )){
 			var FilePath = "";
@@ -197,22 +197,22 @@ component name="OpenAPIParser" accessors="true" {
 			var FilePath = refArray[ 1 ];
 			if( arrayLen( refArray ) > 1 ) {
 				var XPath = refArray[ 2 ];
-			}	
+			}
 		}
 
 		var ReferenceDocument = {};
-		
+
 		try{
-			
+
 			//Files receive a parser reference
 			if( left( FilePath, 4 ) == 'http'  ){
-				
+
 				var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  $ref );
 
 			} else if( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )){
 
 				var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
-			
+
 			} else if( len( FilePath ) && fileExists( expandPath( FilePath ) ) ) {
 
 				var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
@@ -223,7 +223,7 @@ component name="OpenAPIParser" accessors="true" {
 
 			} else if( !isNull( XPath )  && len( XPath ) ) {
 
-				var ReferenceDocument = getInternalXPath( XPath );	
+				var ReferenceDocument = getInternalXPath( XPath );
 
 			} else {
 
@@ -233,13 +233,13 @@ component name="OpenAPIParser" accessors="true" {
 
 		} catch( any e ){
 
-			throw( 
+			throw(
 				type="CBSwagger.InvalidReferenceDocumentException",
 				message="The $ref file pointer of #$ref# could not be loaded and parsed as a valid object.  If your $ref file content is an array, please nest the array within an object as a named key."
 			);
 
 		}
-		
+
 		return ReferenceDocument;
 	}
 
@@ -250,7 +250,7 @@ component name="OpenAPIParser" accessors="true" {
 	private function throwInvalidJSONException( required string InvalidContent ){
 
 		throw( type="SwaggerSDK.ParserException", message="The API Document Provided: #getBaseDocumentPath()# could not be converted to valid JSON" );
-	
+
 	}
 
 }

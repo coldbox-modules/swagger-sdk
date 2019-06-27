@@ -1,12 +1,12 @@
 # Coldbox OpenAPI SDK ( aka Swagger )
 ## The OpenAPI Software Development Kit for the Coldbox Platform
 
-This module allows for software development using the Swagger/OpenAPI specification and utilizes the [v3.0 OpenAPI Specification]([https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md])
+This module allows for software development using the Swagger/OpenAPI specification and utilizes the [v3.0.x OpenAPI Specification]([https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md])
 
 ## See These Other Swagger/OpenAPI-aware Coldbox Modules
 
 * [Relax](https://www.forgebox.io/view/relax) - Model, Document and Test your APIs
-* [cbSwagger](https://www.forgebox.io/view/cbswagger) - AutoDocument your ColdBox APIs to OpenAPI Specs
+* [cbSwagger](https://www.forgebox.io/view/cbswagger) - AutoDocument your ColdBox APIs to OpenAPI Specs. This module will introspect your app and produce a beautiful open api document for you dynamically.
 
 
 ## Install ( via Commandbox )
@@ -23,14 +23,17 @@ This SDK allows for creation, parsing, and normalization of OpenAPI documentatio
 var APIDoc = getInstance( "OpenAPIParser@SwaggerSDK" ).init( DocumentPathOrURL );
 ```
 
-This returns the parsed document object, which can be fully normalized ( e.g. $ref attributes are loaded and normalized within the document ) with `APIDoc.getNormalizedDocument()`
+This returns the parsed document object, which can be fully normalized ( e.g. `$ref` attributes are loaded and normalized within the document ) with `APIDoc.getNormalizedDocument()`
 
-You may also export the normalized document object to JSON (`APIDoc.asJSON()`), YAML (`APIDoc.asYAML()`), or as Struct++ (`APIDoc.asYAML()`)
+You may also export the normalized document object to JSON (`APIDoc.asJSON()`), YAML (`APIDoc.asYAML()`), or as Struct++ (`APIDoc.asStruct()`)
 
-++Note: in order to maintain order, the struct format used is a Java.util.LinkedHashmap.  In order to access struct keys you will need to use braces ( e.g. = `APIDoc[ "info" ][ "title" ]` )
+---
 
+**Note** : in order to maintain order, the struct format used is a `Java.util.LinkedHashmap`.  In order to access struct keys you will need to use braces ( e.g. = `APIDoc[ "info" ][ "title" ]` )
 
-See the APIDocs for additional information on methods and functions available in the SDK
+---
+
+See the APIDocs for additional information on methods and functions available in the SDK (https://apidocs.ortussolutions.com/#/coldbox-modules/swagger-sdk/)
 
 
 
@@ -40,7 +43,7 @@ Apache License, Version 2.0.
 
 ********************************************************************************
 Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 
 #### HONOR GOES TO GOD ABOVE ALL
