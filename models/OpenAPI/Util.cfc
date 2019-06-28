@@ -17,30 +17,26 @@ component name="OpenAPIUtil" accessors="true" {
 	 * Generate a new template for the Open API spec
 	 */
 	any function newTemplate(){
-		//We need to use Linked Hashmaps to maintain struct order for serialization and deserialization
+		// We need to use Linked Hashmaps to maintain struct order for serialization and deserialization
 		var template = structNew( "ordered" );
-			var templateDefaults  = [
-			{"openapi"            : "3.0.2"},
+		var templateDefaults  = [
+			{ "openapi"			: "3.0.2" },
 			{
-			  "info"              : {
-			      "version"       : "",
-			      "title"         : "",
-			      "description"   : "",
-			      "termsOfService": "",
-			      "contact"       : structNew( "ordered" ),
-			      "license"       : structNew( "ordered" )
+			  "info"			: {
+			      "version"       	: "",
+			      "title"         	: "",
+			      "description"   	: "",
+			      "termsOfService"	: "",
+			      "license"       	: structNew( "ordered" ),
+			      "contact"       	: structNew( "ordered" )
 			    }
 			},
-			{"servers":[]},
-			{"paths"              : structNew( "ordered" )},
-			{"security": []},
-			{
-				"externalDocs": {
-					"description": "",
-  					"url": ""
-				}
-			}
-
+			{ "servers" 		: [] },
+			{ "paths"           : structNew( "ordered" ) },
+			{ "components"      : structNew( "ordered" ) },
+			{ "security" 		: structNew( "ordered" ) },
+			{ "tags" 			: [] },
+			{ "externalDocs" 	: {} }
 		];
 
 		for( var templateDefault  in  templateDefaults ){
