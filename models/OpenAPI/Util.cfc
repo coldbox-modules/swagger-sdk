@@ -68,7 +68,9 @@ component name="OpenAPIUtil" accessors="true" {
 			{ "requestBody" : {
 				"content" : {
 
-				}
+				},
+				"description" : "",
+				"required" : false
 			} },
 			{
 				"responses"  : {
