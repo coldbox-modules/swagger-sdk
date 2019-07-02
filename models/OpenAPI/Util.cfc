@@ -34,9 +34,12 @@ component name="OpenAPIUtil" accessors="true" {
 			{ "servers" 		: [] },
 			{ "paths"           : structNew( "ordered" ) },
 			{ "components"      : structNew( "ordered" ) },
-			{ "security" 		: structNew( "ordered" ) },
+			{ "security" 		: [] },
 			{ "tags" 			: [] },
-			{ "externalDocs" 	: {} }
+			{ "externalDocs" 	: {
+				"description" 	: "",
+				"url" 			: ""
+			} }
 		];
 
 		for( var templateDefault  in  templateDefaults ){
