@@ -53,18 +53,32 @@ component name="OpenAPIUtil" accessors="true" {
 	 * Create a new method representation
 	 */
 	any function newMethod(){
-		var method = structNew( "ordered" );
+		var method 	= structNew( "ordered" );
 		var descMap = structNew( "ordered" );
+
 		descMap.put( "description", "" );
+
 		//Other supported options are requestBody and tag will be added runtime
 		var methodDefaults   = [
-			{"summary"    : ""},
-			{"description": ""},
-			{"operationId": ""},
-			{"parameters" : []},
+			{ "summary"    	: "" },
+			{ "tags" 		: [] },
+			{ "description"	: "" },
+			{ "operationId"	: "" },
+			{ "parameters" 	: [] },
+			{ "requestBody" : {
+				"content" : {
+
+				}
+			} },
 			{
 				"responses"  : {
 					"default": descMap
+				}
+			},
+			{
+				"externalDocs" : {
+					"description" 	: "",
+					"url" 			: ""
 				}
 			}
 		];
