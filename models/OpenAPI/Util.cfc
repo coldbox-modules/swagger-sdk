@@ -65,13 +65,6 @@ component name="OpenAPIUtil" accessors="true" {
 			{ "description"	: "" },
 			{ "operationId"	: "" },
 			{ "parameters" 	: [] },
-			{ "requestBody" : {
-				"content" : {
-
-				},
-				"description" : "",
-				"required" : false
-			} },
 			{
 				"responses"  : {
 					"default": descMap
