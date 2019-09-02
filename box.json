@@ -1,20 +1,34 @@
 {
-    "name"            : "SwaggerSDK-shell",
-    "version"         : "0.0.1",
-    "slug"            : "SwaggerSDK-shell",
-    "private"         : false,
-    "dependencies"    : {
-            "coldbox"     : "^4.1.0",
-            "cbjavaloader": ">1.0.0",
-            "workbench"   : "git+https://github.com/Ortus-Solutions/unified-workbench.git"
+    "name"            : "swagger-sdk",
+    "shortDescription": "The Swagger Software Development Kit for the Coldbox Platform",
+    "version"         : "2.0.0",
+    "author"          : "Jon Clausen <jon_clausen@silowebworks.com>",
+    "slug"            : "swagger-sdk",
+    "type"            : "modules",
+    "keywords"        : "Swagger,OpenAPI,API Documentation",
+    "location"        : "https://downloads.ortussolutions.com/ortussolutions/coldbox-modules/swagger-sdk/@build.version@/swagger-sdk-@build.version@.zip",
+    "homepage"        : "https://github.com/coldbox-modules/swagger-sdk",
+    "documentation"   : "https://github.com/coldbox-modules/swagger-sdk/wiki",
+    "repository"      : { "type" : "git", "url" : "https://github.com/coldbox-modules/swagger-sdk" },
+    "bugs"            : "https://github.com/coldbox-modules/swagger-sdk/issues",
+    "license"         :[
+            {
+                "type"    : "Apache2",
+                "url"     : "http://www.apache.org/licenses/LICENSE-2.0.html"
+            }
+    ],
+    "contributors"    :[
+        "Luis Majano <lmajano@ortussolutions.com>"
+    ],
+    "dependencies"    :{
+            "cbjavaloader": ">0.0.9"
     },
-    "devDependencies" : {
-        "testbox"     : "2.2.0"
-    },
-    "installPaths"    : {
-            "coldbox"     : "coldbox",
-            "testbox"     : "testbox",
-            "cbjavaloader": "modules/cbjavaloader",
-            "workbench"   : "workbench"
+    "ignore": [
+    	"**/.*",
+    	"test-harness",
+    	"*/.md"
+    ],
+    "scripts": {
+    	"toMaster": "recipe build/toMaster.boxr"
     }
 }

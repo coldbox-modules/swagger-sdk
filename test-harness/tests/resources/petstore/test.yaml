@@ -1,0 +1,10 @@
+openapi: 3.0.0
+paths:
+  /pets: {x-resourceId: ce256990f68429fe5bbf34dd4676b0be, $ref: paths/pets.json#/pets}
+  /pets/{petId}: {x-resourceId: fc3ae7cc26809294a467ea56597c8f22, $ref: 'paths/pets.json#/pets/{petId}'}
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license: {name: MIT}
+servers:
+- {url: 'http://petstore.swagger.io/v1'}
