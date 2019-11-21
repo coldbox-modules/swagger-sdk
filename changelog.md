@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0
+
+* `improvement` : Removed entrypoint for cleanup of routes
+
 ## v2.0.0
 
 * Open API 3.02 support instead of swagger
