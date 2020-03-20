@@ -93,16 +93,9 @@ component name="OpenAPIParser" accessors="true" {
 	* @param [XPath]	The XPath to zoom the parsed document to during recursion
 	**/
 	public function parse( required struct APIDoc, required string XPath="" ){
-
 		setDocumentObject( getWirebox().getInstance( "OpenAPIDocument@SwaggerSDK" ).init( arguments.APIDoc, arguments.XPath) );
 
-		var Document = getDocumentObject().getDocument();
-
-		for( var key in Document ){
-			if( isSimpleValue( key ) ){
-				Document[ key ] = parseDocumentReferences( Document[ key ] );
-			}
-		}
+		parseDocumentReferences( getDocumentObject().getDocument() );
 
 		return this;
 	}
