@@ -86,52 +86,33 @@ component name="OpenAPIDocument" accessors="true" {
 	 * @param APIDoc 	The document to normalized.  Defaults to the entity document
 	 **/
 	function getNormalizedDocument( any APIDoc=this.getDocument() ){
+		if( isArray( arguments.APIDoc ) ){
+			 return arrayMap( arguments.APIDoc, function( item ) {
+                return getNormalizedDocument( item );
+             } );
+        }
 
-		if( isArray( APIDoc ) ){
-			 return APIDoc;
-		}
+        if ( isObject( arguments.APIDoc ) && findNoCase( "Parser", getMetaData( arguments.APIDoc ).name ) ) {
+            if ( !structKeyExists( arguments.APIDoc, "getDocumentObject" )  ) {
+                throwForeignObjectTypeException( arguments.APIDoc );
+                throw(
+                    type = "SwaggerSDK.NormalizationException",
+                    message = "SwaggerSDK doesn't know what do with an object of type #getMetaData( arguments.APIDoc ).name#."
+                );
+            }
 
-		var NormalizedDoc = structCopy( arguments.APIDoc );
+            return arguments.APIDoc.getDocumentObject().getNormalizedDocument();
+        }
 
-		for ( var key in NormalizedDoc ){
+        if ( isStruct( arguments.APIDoc ) ) {
+            return setResourceIds(
+                structMap( arguments.APIDoc, function( key, value ) {
+                    return getNormalizedDocument( value );
+                } )
+            );
+        }
 
-			if( isObject( NormalizedDoc[ key ] ) && findNoCase( "Parser", getMetaData( NormalizedDoc[ key ] ).name ) ){
-
-				if( !structKeyExists( NormalizedDoc[ key ], "getDocumentObject" )  ){
-					throwForeignObjectTypeException( NormalizedDoc[ key ] );
-					throw( type="SwaggerSDK.NormalizationException" ,message="SwaggerSDK doesn't know what do with an object of type #getMetaData( NormalizedDoc[ key ] ).name#." );
-				}
-
-				NormalizedDoc[ key ]=NormalizedDoc[ key ].getDocumentObject().getNormalizedDocument();
-
-			} else if( isStruct( normalizedDoc[ key ] ) ){
-
-				NormalizedDoc[ key ] = getNormalizedDocument( NormalizedDoc[ key ] );
-
-			} else if( isArray( NormalizedDoc[ key ] ) ){
-
-				for( var i = 1; i <= arrayLen( NormalizedDoc[ key ] ); i++ ){
-
-					if( isStruct( NormalizedDoc[ key ][ i ] ) ) NormalizedDoc[ key ][ i ] = getNormalizedDocument( NormalizedDoc[ key ][ i ] );
-
-					if( isObject( NormalizedDoc[ key ][ i ] ) ) {
-
-						if( !structKeyExists( NormalizedDoc[ key ][ i ], "getDocumentObject" )  ){
-							throwForeignObjectTypeException( NormalizedDoc[ key ][ i ] );
-						}
-
-						NormalizedDoc[ key ][ i ] = NormalizedDoc[ key ][ i ].getDocumentObject().getNormalizedDocument();
-
-					}
-
-				}
-
-			}
-		}
-
-		setResourceIds( normalizedDoc );
-
-		return NormalizedDoc;
+        return arguments.APIDoc;
 	}
 
 	/**
@@ -165,31 +146,32 @@ component name="OpenAPIDocument" accessors="true" {
 	 * @param resourceDoc	The document to parse for x-resourceId nodes
 	 * @param hashPrefix		The prefix to use when hashing the x-resourceId value
 	 **/
-	private void function setResourceIds(required struct resourceDoc, string hashPrefix="" ){
+	private struct function setResourceIds(required struct resourceDoc, string hashPrefix="" ){
 		var appendableNodes = [ "paths","get","post","put","patch","delete","head","option" ];
 
 		for ( var resourceKey in appendableNodes ){
 
-			if(  structKeyExists( resourceDoc, resourceKey ) && isStruct( resourceDoc[ resourceKey ] ) ){
-				for( var pathKey in resourceDoc[ resourceKey ] ){
-					if( !isStruct( resourceDoc[ resourceKey ][ pathKey ] ) ) continue;
+			if(  structKeyExists( arguments.resourceDoc, resourceKey ) && isStruct( arguments.resourceDoc[ resourceKey ] ) ){
+				for( var pathKey in arguments.resourceDoc[ resourceKey ] ){
+					if( !isStruct( arguments.resourceDoc[ resourceKey ][ pathKey ] ) ) continue;
 
-					resourceDoc[ resourceKey ][ pathKey ].put( "x-resourceId", lcase( hashPrefix & hash( pathKey ) ) );
+					arguments.resourceDoc[ resourceKey ][ pathKey ].put( "x-resourceId", lcase( arguments.hashPrefix & hash( pathKey ) ) );
 
 					//recurse, if necessary
-					for( var subKey in resourceDoc[ resourceKey ][ pathKey ] ){
+					for( var subKey in arguments.resourceDoc[ resourceKey ][ pathKey ] ){
 						if(
 							arrayFindNoCase( appendableNodes, subKey )
 							&&
-							isStruct( resourceDoc[ resourceKey ][ pathKey ][ subKey ] )
+							isStruct( arguments.resourceDoc[ resourceKey ][ pathKey ][ subKey ] )
 						) {
-							resourceDoc[ resourceKey ][ pathKey ][ subKey ].put( "x-resourceId", lcase( hashPrefix & hash( pathKey & subkey ) ) );
+							arguments.resourceDoc[ resourceKey ][ pathKey ][ subKey ].put( "x-resourceId", lcase( arguments.hashPrefix & hash( pathKey & subkey ) ) );
 						}
 					}
 				}
 			}
 		}
 
+        return arguments.resourceDoc;
 	}
 
 	/**
