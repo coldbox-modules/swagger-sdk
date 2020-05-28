@@ -107,7 +107,8 @@ component name="OpenAPIDocument" accessors="true" {
         if ( isStruct( arguments.APIDoc ) ) {
             return setResourceIds(
                 structMap( arguments.APIDoc, function( key, value ) {
-                    return getNormalizedDocument( value );
+				    // allow explicit nulls in sample docs to pass through
+                    return !isNull( value ) ? getNormalizedDocument( value ) : javacast( "null", 0 );
                 } )
             );
         }
