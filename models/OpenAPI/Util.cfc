@@ -35,11 +35,7 @@ component name="OpenAPIUtil" accessors="true" {
 			{ "paths"           : structNew( "ordered" ) },
 			{ "components"      : structNew( "ordered" ) },
 			{ "security" 		: [] },
-			{ "tags" 			: [] },
-			{ "externalDocs" 	: {
-				"description" 	: "",
-				"url" 			: ""
-			} }
+			{ "tags" 			: [] }
 		];
 
 		for( var templateDefault  in  templateDefaults ){
@@ -68,12 +64,6 @@ component name="OpenAPIUtil" accessors="true" {
 			{
 				"responses"  : {
 					"default": descMap
-				}
-			},
-			{
-				"externalDocs" : {
-					"description" 	: "",
-					"url" 			: ""
 				}
 			}
 		];
