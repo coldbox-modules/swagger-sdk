@@ -132,7 +132,7 @@ component name="OpenAPIParser" accessors="true" {
 			}
 		} else if( isStruct( DocItem ) ) {
 			//handle top-level values, if they exist
-			if( structKeyExists( DocItem, "$ref" ) ) return fetchDocumentReference(DocItem[ "$ref" ]);
+			if( structKeyExists( DocItem, "$ref" ) ) return parseDocumentReferences( fetchDocumentReference( DocItem[ "$ref" ] ).getNormalizedDocument() );
 
 			for( var key in DocItem){
 
@@ -142,7 +142,7 @@ component name="OpenAPIParser" accessors="true" {
 					structKeyExists( DocItem[ key ], "$ref" )
 				) {
 
-					DocItem[ key ] = fetchDocumentReference( DocItem[ key ][ "$ref" ] );
+					DocItem[ key ] = parseDocumentReferences( fetchDocumentReference( DocItem[ key ][ "$ref" ] ).getNormalizedDocument() );
 
 				} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
 
