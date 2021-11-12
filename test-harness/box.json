@@ -5,11 +5,11 @@
     "private":true,
     "description":"",
     "dependencies":{
-        "coldbox":"^5.0.0",
+        "coldbox":"^6",
         "cbjavaloader":"^2.0.0+44"
     },
     "devDependencies":{
-        "testbox":"^3.0.0"
+        "testbox":"*"
     },
     "installPaths":{
         "coldbox":"coldbox/",
@@ -18,5 +18,10 @@
     },
     "testbox":{
         "runner":"http://localhost:60299/tests/runner.cfm"
+    },
+    "scripts":{
+        "cfpm":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\"' | run",
+        "cfpm:install":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run",
+        "install:2021":"run-script cfpm:install zip"
     }
 }
