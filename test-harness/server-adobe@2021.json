@@ -9,11 +9,11 @@
             "port":"60299"
         },
         "rewrites":{
-            "enable":"true"
+            "enable":true
         },
         "aliases":{
             "/moduleroot/swagger-sdk":"../"
         }
     },
-    "openBrowser":"false"
+    "openBrowser":true
 }
