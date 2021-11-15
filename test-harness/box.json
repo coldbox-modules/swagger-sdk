@@ -20,6 +20,6 @@
         "runner":"http://localhost:60299/tests/runner.cfm"
     },
     "scripts":{
-        "onServerInstall":"! assertEqual ${matrix.cfengine} adobe@2021 || cfpm install zip"
+        "onServerInstall":"assertEqual ${matrix.cfengine} adobe@2021 || cfpm install zip ; echo 'Engine prerequisites met'"
     }
 }
