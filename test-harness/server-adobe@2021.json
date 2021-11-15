@@ -15,5 +15,8 @@
             "/moduleroot/swagger-sdk":"../"
         }
     },
-    "openBrowser":"false"
+    "openBrowser": false,
+    "scripts":{
+        "onServerInstall":"cfpm install zip"
+    }
 }
