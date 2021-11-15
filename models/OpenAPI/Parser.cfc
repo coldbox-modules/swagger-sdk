@@ -141,8 +141,8 @@ component name="OpenAPIParser" accessors="true" {
 					&&
 					structKeyExists( DocItem[ key ], "$ref" )
 				) {
-					var parsedItem = parseDocumentReferences( fetchDocumentReference( DocItem[ key ][ "$ref" ] ) );
-					DocItem[ key ] = isInstanceOf( parsedItem, "Parser" ) ? parsedItem.getNormalizedDocument() : parsedItem;
+
+					DocItem[ key ] = parseDocumentReferences( fetchDocumentReference( DocItem[ key ][ "$ref" ] ).getNormalizedDocument() );
 
 				} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
 
