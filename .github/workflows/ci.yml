@@ -51,6 +51,7 @@ jobs:
       - name: Start ${{ matrix.cfengine }} Server
         working-directory: ./test-harness
         run: |
+          echo "matrix.cfengine=${{ matrix.cfengine }}" > ./.env
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
           # Install Adobe 2021 cfpm modules
           if [[ "${{ matrix.cfengine }}" == "adobe@2021" ]] ; then
