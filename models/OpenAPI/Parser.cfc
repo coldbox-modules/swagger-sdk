@@ -158,16 +158,6 @@ component name="OpenAPIParser" accessors="true" {
 	}
 
 	/**
-	* Retrieves the value from a nested struc when given an XPath argument
-	*
-	* @param XPath	The XPath to zoom the parsed document to during recursion
-	**/
-	public function getInternalXPath( required string XPath ){
-		var PathArray = listToArray( XPath, "/" );
-		return getDocumentObject().locate( arrayToList( PathArray, "." ) );
-	}
-
-	/**
 	* Convenience method to return the fully normalize document
 	**/
 	public function getNormalizedDocument(){
@@ -216,7 +206,7 @@ component name="OpenAPIParser" accessors="true" {
 
 			} else if( !isNull( XPath )  && len( XPath ) ) {
 
-				var ReferenceDocument = getInternalXPath( XPath );
+				return { "$ref" : $ref };
 
 			} else {
 
