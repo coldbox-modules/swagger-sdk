@@ -95,7 +95,7 @@ component name="OpenAPIParser" accessors="true" {
 	public function parse( required struct APIDoc, required string XPath="" ){
 		setDocumentObject( getWirebox().getInstance( "OpenAPIDocument@SwaggerSDK" ).init( arguments.APIDoc, arguments.XPath) );
 
-		parseDocumentReferences( getDocumentObject().getDocument() );
+		parseDocumentReferences( getDocumentObject().getRootDocument() );
 
 		return this;
 	}
@@ -158,7 +158,7 @@ component name="OpenAPIParser" accessors="true" {
 	}
 
 	/**
-	* Retrieves the value from a nested struc when given an XPath argument
+	* Retrieves the value from a nested struct when given an XPath argument
 	*
 	* @param XPath	The XPath to zoom the parsed document to during recursion
 	**/
@@ -183,13 +183,15 @@ component name="OpenAPIParser" accessors="true" {
 		//resolve internal refrences before looking for externals
 		if( left( $ref, 1 ) == chr( 35 )){
 			var FilePath = "";
-			var XPath = listLast( " " & $ref, chr( 35 ) );
-
+			var XPath = right( $ref, len( $ref ) - 1 );
 		} else {
 			var refArray = listToArray( $ref, chr( 35 ) );
 			var FilePath = refArray[ 1 ];
 			if( arrayLen( refArray ) > 1 ) {
 				var XPath = refArray[ 2 ];
+				if( left( XPath, 1 ) == '/' ){
+					XPath = right( XPath, len( XPath ) - 1 );
+				}
 			}
 		}
 

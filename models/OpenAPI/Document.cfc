@@ -6,6 +6,7 @@
  */
 component name="OpenAPIDocument" accessors="true" {
 
+	property name="RootDocument";
 	property name="Document";
 	property name="XPath";
 
@@ -21,16 +22,18 @@ component name="OpenAPIDocument" accessors="true" {
 	 **/
 	Document function init( required struct Doc, required string XPath="" ){
 
+		// Scope the root Document to handle internal inheritance $refs
+		setRootDocument( arguments.Doc );
+
+		// Set the working document which will be returned when normalized
 		setDocument( arguments.Doc );
 
+		// Zoom if requested
 		if( len( arguments.XPath ) ){
+			arguments.XPath = arrayToList( listToArray( arguments.XPath, "/" ), "." );
 			this
 				.setXPath( arguments.XPath )
 				.zoomToXPath();
-		}
-
-		if( isStruct( arguments.Doc ) ){
-			setResourceIds( arguments.Doc );
 		}
 
 		return this;
@@ -90,9 +93,7 @@ component name="OpenAPIDocument" accessors="true" {
 			 return arrayMap( arguments.APIDoc, function( item ) {
                 return getNormalizedDocument( item );
              } );
-        }
-
-        if ( isObject( arguments.APIDoc ) && findNoCase( "Parser", getMetaData( arguments.APIDoc ).name ) ) {
+        } else if ( isObject( arguments.APIDoc ) && findNoCase( "Parser", getMetaData( arguments.APIDoc ).name ) ) {
             if ( !structKeyExists( arguments.APIDoc, "getDocumentObject" )  ) {
                 throwForeignObjectTypeException( arguments.APIDoc );
                 throw(
@@ -102,15 +103,11 @@ component name="OpenAPIDocument" accessors="true" {
             }
 
             return arguments.APIDoc.getDocumentObject().getNormalizedDocument();
-        }
-
-        if ( isStruct( arguments.APIDoc ) ) {
-            return setResourceIds(
-                structMap( arguments.APIDoc, function( key, value ) {
-				    // allow explicit nulls in sample docs to pass through
-                    return !isNull( value ) ? getNormalizedDocument( value ) : javacast( "null", 0 );
-                } )
-            );
+        } else if ( isStruct( arguments.APIDoc ) ) {
+            return structMap( arguments.APIDoc, function( key, value ) {
+				// allow explicit nulls in sample docs to pass through
+                return !isNull( value ) ? getNormalizedDocument( value ) : javacast( "null", 0 );
+            } );
         }
 
         return arguments.APIDoc;
@@ -124,56 +121,22 @@ component name="OpenAPIDocument" accessors="true" {
 	 * @usage locate('key.subkey.subsubkey.waydowndeepsubkey')
 	 **/
 	any function locate( string key ){
-		var document = this.getDocument();
+		var rootDocument = this.getRootDocument();
 
-		if( structKeyExists( document, arguments.key ) ){
-			return document[ arguments.key ];
+		if( structKeyExists( rootDocument, arguments.key ) ){
+			return rootDocument[ arguments.key ];
 		} else {
-			if( isDefined( 'document.#arguments.key#' ) ){
-				return evaluate( 'document.#arguments.key#' );
+			if( isDefined( 'rootDocument.#arguments.key#' ) ){
+				return evaluate( 'rootDocument.#arguments.key#' );
 			}
 		}
 
-		return document;
+		return getDocument();
 	}
 
 	/********************************************************************************/
 	/*  PRIVATE FUNCTIONS
 	/********************************************************************************/
-
-	/**
-	 * Sets the resourceId extension of a document path
-	 *
-	 * @param resourceDoc	The document to parse for x-resourceId nodes
-	 * @param hashPrefix		The prefix to use when hashing the x-resourceId value
-	 **/
-	private struct function setResourceIds(required struct resourceDoc, string hashPrefix="" ){
-		var appendableNodes = [ "paths","get","post","put","patch","delete","head","option" ];
-
-		for ( var resourceKey in appendableNodes ){
-
-			if(  structKeyExists( arguments.resourceDoc, resourceKey ) && isStruct( arguments.resourceDoc[ resourceKey ] ) ){
-				for( var pathKey in arguments.resourceDoc[ resourceKey ] ){
-					if( !isStruct( arguments.resourceDoc[ resourceKey ][ pathKey ] ) ) continue;
-
-					arguments.resourceDoc[ resourceKey ][ pathKey ].put( "x-resourceId", lcase( arguments.hashPrefix & hash( pathKey ) ) );
-
-					//recurse, if necessary
-					for( var subKey in arguments.resourceDoc[ resourceKey ][ pathKey ] ){
-						if(
-							arrayFindNoCase( appendableNodes, subKey )
-							&&
-							isStruct( arguments.resourceDoc[ resourceKey ][ pathKey ][ subKey ] )
-						) {
-							arguments.resourceDoc[ resourceKey ][ pathKey ][ subKey ].put( "x-resourceId", lcase( arguments.hashPrefix & hash( pathKey & subkey ) ) );
-						}
-					}
-				}
-			}
-		}
-
-        return arguments.resourceDoc;
-	}
 
 	/**
 	* Throws a foreign object type exception if detected when normalizing a document
