@@ -30,19 +30,13 @@ component extends="BaseOpenAPISpec"{
 					.toHaveKey( "getDocument" );
 
 				// test that path items have resource IDs
-				var instanceDoc = DocumentObject.getDocument();
+				var instanceDoc = DocumentObject.getNormalizedDocument();
 
-				for( var pathKey in instanceDoc[ "paths" ] ){
-
-					expect( instanceDoc[ "paths" ][ pathKey ] ).toHaveKey( "x-resourceId" );
-
-					if( structKeyExists( instanceDoc[ "paths" ][ pathKey ], "methods" ) ){
-						for( var methodKey in instanceDoc[ "paths" ][ pathKey ][ "methods" ] ){
-							expect( instanceDoc[ "paths" ][ pathKey ][ "methods" ][ methodKey ] ).toHaveKey( "x-resourceId" );
-						}
-					}
-				}
-
+				expect( instanceDoc ).toHaveKey( "openapi" )
+								.toHaveKey( "info" )
+								.toHaveKey( "paths" )
+								.toHaveKey( "servers" )
+								.toHaveKey( "tags" );
 			} );
 
 
