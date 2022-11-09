@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Removed assignment of `x-resourceId` keys used by Relax from Swagger SDK parsing. [cbSwagger #20](https://github.com/coldbox-modules/cbSwagger/issues/20), [cbSwagger #27](https://github.com/coldbox-modules/cbSwagger/issues/27)
+* Removed support for Adobe Coldfusion 2016
 
 ## [2.1.0] => 2021-NOV-12
 
