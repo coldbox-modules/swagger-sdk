@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [cbSwagger #35](https://github.com/coldbox-modules/cbSwagger/issues/35) Fixed an issue where inheritance `$ref` pointers on a Zoomed document could not be found
 
+### Added
+
+* [cbSwagger #35](https://github.com/coldbox-modules/cbSwagger/issues/35) Added support for [polymorphic inheritance expansion](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/) ( e.g. `$allOf` )
+
 ### Changed
 
 * Removed assignment of `x-resourceId` keys used by Relax from Swagger SDK parsing. [cbSwagger #20](https://github.com/coldbox-modules/cbSwagger/issues/20), [cbSwagger #27](https://github.com/coldbox-modules/cbSwagger/issues/27)

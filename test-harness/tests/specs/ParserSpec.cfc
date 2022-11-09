@@ -82,6 +82,7 @@ component extends="BaseOpenAPISpec"{
 			expect( NormalizedDocument ).toHaveKey( "openapi" );
 			expect( NormalizedDocument ).toHaveKey( "servers" );
 			expect( NormalizedDocument ).toHaveKey( "info" );
+
 			if(Parser.getSchemaType() eq "YAML")
 				expect( NormalizedDocument ).toHaveKey( "components" );
 
@@ -100,6 +101,7 @@ component extends="BaseOpenAPISpec"{
 			expect( NormalizedDocument.paths[ '/pet/{petId}' ] ).toHaveDeepKey( "responses" );
 
 			expect( arrayLen( structFindKey( NormalizedDocument, "$ref" ) ) ).toBe( 0 );
+			expect( arrayLen( structFindKey( NormalizedDocument, "$allOf" ) ) ).toBe( 0 );
 
 		});
 
