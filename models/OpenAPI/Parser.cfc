@@ -131,7 +131,7 @@ component name="OpenAPIParser" accessors="true" {
 				DocItem[ i ] = parseDocumentReferences( DocItem[ i ] );
 			}
 		} else if( isStruct( DocItem ) ) {
-            
+
             //handle top-level values, if they exist
 			if( structKeyExists( DocItem, "$ref" ) ) return fetchDocumentReference( DocItem[ "$ref" ] );
 
@@ -166,16 +166,16 @@ component name="OpenAPIParser" accessors="true" {
 	* @param [XPath]	The XPath to zoom the parsed document to during recursion
 	**/
 	public function parseDocumentInheritance( required any DocItem ){
-        
+
         if( isArray( DocItem ) ) {
             for( var i = 1; i <= arrayLen( DocItem ); i++){
 				DocItem[ i ] = parseDocumentInheritance( DocItem[ i ] );
 			}
 		} else if( isStruct( DocItem ) ) {
-            
+
             // handle top-level extension
-            if( 
-                structKeyExists( DocItem, "$allOf" ) && 
+            if(
+                structKeyExists( DocItem, "$allOf" ) &&
                 isArray( DocItem[ "$allOf" ] )
             ) {
                 return extendObject( DocItem[ "$allOf" ] );
@@ -185,7 +185,7 @@ component name="OpenAPIParser" accessors="true" {
 
                 if (
                     isStruct( DocItem[ key ] ) &&
-					structKeyExists( DocItem[ key ], "$allOf" ) && 
+					structKeyExists( DocItem[ key ], "$allOf" ) &&
                     isArray( DocItem[ key ][ "$allOf" ] )
                 ) {
                     DocItem[ key ] = extendObject( DocItem[ key ][ "$allOf" ] );
@@ -205,17 +205,17 @@ component name="OpenAPIParser" accessors="true" {
      * Extends schema definitions based on the passed array of schema objects
      * Note: Ignores CFML objects (non-structs) because sometimes the parser gets passed in here for some reason
      *
-     * @objects 
+     * @objects
      */
     function extendObject( array objects ) {
         var output = {
             "type": "object"
         };
         objects.each( function( item, index ) {
-            if ( isStruct( item ) ) { 
+            if ( isStruct( item ) ) {
                 item.each( function( key, value ) {
-                    
-                    if ( 
+
+                    if (
                         output.keyExists( key ) &&
                         isStruct( output[ key ] )
                     ) {
@@ -223,7 +223,7 @@ component name="OpenAPIParser" accessors="true" {
                     } else {
                         output[ key ] = value
                     }
-                    
+
                 } );
             }
         } );
@@ -280,7 +280,7 @@ component name="OpenAPIParser" accessors="true" {
 
 			} else if( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )){
 
-                ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & FilePath );
+                ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
 
 			} else if( len( FilePath ) && fileExists( expandPath( FilePath ) ) ) {
 
@@ -309,7 +309,7 @@ component name="OpenAPIParser" accessors="true" {
 
 		}
 
-        return ReferenceDocument.getNormalizedDocument();
+        return ReferenceDocument;
 	}
 
 	/**
