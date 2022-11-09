@@ -188,9 +188,9 @@ component name="OpenAPIParser" accessors="true" {
 					structKeyExists( DocItem[ key ], "$allOf" ) &&
                     isArray( DocItem[ key ][ "$allOf" ] )
                 ) {
-                    DocItem[ key ] = extendObject( DocItem[ key ][ "$allOf" ] );
+                    DocItem[ key ] = parseDocumentReferences( extendObject( DocItem[ key ][ "$allOf" ] ) );
 				} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
-					DocItem[ key ] = parseDocumentInheritance( DocItem[ key ] );
+					DocItem[ key ] = parseDocumentInheritance( parseDocumentReferences( DocItem[ key ] ) );
 				}
 
 			}
