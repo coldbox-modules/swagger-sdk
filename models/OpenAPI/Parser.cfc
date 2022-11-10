@@ -173,27 +173,33 @@ component name="OpenAPIParser" accessors="true" {
 			}
 		} else if( isStruct( DocItem ) ) {
 
-            // handle top-level extension
-            if(
-                structKeyExists( DocItem, "$allOf" ) &&
-                isArray( DocItem[ "$allOf" ] )
-            ) {
-                return extendObject( DocItem[ "$allOf" ] );
-            }
+			var compositionKeys = [ "$allOf", "$oneOf" ];
 
-			for( var key in DocItem){
+			for( var composition in compositionKeys ){
 
-                if (
-                    isStruct( DocItem[ key ] ) &&
-					structKeyExists( DocItem[ key ], "$allOf" ) &&
-                    isArray( DocItem[ key ][ "$allOf" ] )
-                ) {
-                    DocItem[ key ] = parseDocumentReferences( extendObject( DocItem[ key ][ "$allOf" ] ) );
-				} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
-					DocItem[ key ] = parseDocumentInheritance( parseDocumentReferences( DocItem[ key ] ) );
+				// handle top-level extension
+				if(
+					structKeyExists( DocItem, composition ) &&
+					isArray( DocItem[ composition ] )
+				) {
+					return extendObject( DocItem[ composition ] );
 				}
 
+				for( var key in DocItem){
+
+					if (
+						isStruct( DocItem[ key ] ) &&
+						structKeyExists( DocItem[ key ], composition ) &&
+						isArray( DocItem[ key ][ composition ] )
+					) {
+						DocItem[ key ] = parseDocumentReferences( extendObject( DocItem[ key ][ composition ] ) );
+					} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
+						DocItem[ key ] = parseDocumentInheritance( parseDocumentReferences( DocItem[ key ] ) );
+					}
+
+				}
 			}
+
 		}
 
 		return DocItem;
