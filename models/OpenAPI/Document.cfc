@@ -117,7 +117,7 @@ component name="OpenAPIDocument" accessors="true" {
 	 * Helper function to locate deeply nested document items
 	 *
 	 * @param key the key to locate
-	 * @return any the value of the key or null if the key is not found
+	 * @return any the value of the key or a `$ref` object if the key is not found
 	 * @usage locate('key.subkey.subsubkey.waydowndeepsubkey')
 	 **/
 	any function locate( string key ){
@@ -125,13 +125,11 @@ component name="OpenAPIDocument" accessors="true" {
 
 		if( structKeyExists( rootDocument, arguments.key ) ){
 			return rootDocument[ arguments.key ];
-		} else {
-			if( isDefined( 'rootDocument.#arguments.key#' ) ){
+		} else if( isDefined( 'rootDocument.#arguments.key#' ) ){
 				return evaluate( 'rootDocument.#arguments.key#' );
-			}
+		} else {
+			return { "$ref" : "##/#arrayToList( listToArray( arguments.key, "." ), "/" )#"};
 		}
-
-		return getDocument();
 	}
 
 	/********************************************************************************/
