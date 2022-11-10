@@ -64,6 +64,22 @@ component extends="BaseOpenAPISpec"{
 			});
 
 		} );
+
+		describe( "Core functionality tests", function(){
+
+			it( "Tests that an attempt to locate an invalid path with return a $ref object", function(){
+				var DocumentObject = getInstance( "OpenAPIDocument@SwaggerSDK" ).init( VARIABLES.testDocument );
+
+				expect( DocumentObject )
+					.toBeComponent()
+					.toHaveKey( "getDocument" );
+
+				var invalidPath = DocumentObject.locate( "foo.bar" );
+				expect( invalidPath ).toBeStruct().toHaveKey( "$ref" );
+				expect( invalidPath[ "$ref" ] ).toBe( "##/foo/bar" );
+
+			})
+		})
 	}
 
 }
