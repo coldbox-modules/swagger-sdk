@@ -219,6 +219,12 @@ component name="OpenAPIParser" accessors="true" {
         };
         objects.each( function( item, index ) {
             if ( isStruct( item ) ) {
+			
+				// If `item` is an instance of Parser, we need to flattin it to a CFML struct
+                if ( isInstanceOf( item, "Parser" ) ) {
+                    item = item.getNormalizedDocument();
+                }
+			
                 item.each( function( key, value ) {
 
                     if (
