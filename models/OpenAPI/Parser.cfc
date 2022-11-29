@@ -312,7 +312,12 @@ component name="OpenAPIParser" accessors="true" {
 
 		} catch( any e ){
 
-			throw(
+            // if this is a known exception or occured via recursion, rethrow the exception so the user knows which JSON file triggered it
+			if ( listFindNoCase( "SwaggerSDK.ParserException,CBSwagger.InvalidReferenceDocumentException", e.type ) ) {
+                rethrow;
+            }
+            
+            throw(
 				type="CBSwagger.InvalidReferenceDocumentException",
 				message="The $ref file pointer of #$ref# could not be loaded and parsed as a valid object.  If your $ref file content is an array, please nest the array within an object as a named key."
 			);
