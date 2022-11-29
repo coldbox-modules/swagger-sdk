@@ -101,7 +101,7 @@ component extends="BaseOpenAPISpec"{
 			expect( NormalizedDocument.paths[ '/pet/{petId}' ] ).toHaveDeepKey( "responses" );
 
 			expect( arrayLen( structFindKey( NormalizedDocument, "$ref" ) ) ).toBe( 0 );
-			expect( arrayLen( structFindKey( NormalizedDocument, "$allOf" ) ) ).toBe( 0 );
+            expect( arrayLen( structFindKey( NormalizedDocument, "$extend" ) ) ).toBe( 0 );
 
 		});
 
