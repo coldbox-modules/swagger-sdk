@@ -173,7 +173,7 @@ component name="OpenAPIParser" accessors="true" {
 			}
 		} else if( isStruct( DocItem ) ) {
 
-			var compositionKeys = [ "$allOf", "$oneOf" ];
+			var compositionKeys = [ "$extend", "$allOf", "$oneOf" ]; // deprecated: $allOf, $oneOf
 
 			for( var composition in compositionKeys ){
 
@@ -214,9 +214,7 @@ component name="OpenAPIParser" accessors="true" {
      * @objects
      */
     function extendObject( array objects ) {
-        var output = {
-            "type": "object"
-        };
+        var output = {};
         objects.each( function( item, index ) {
             if ( isStruct( item ) ) {
 			
