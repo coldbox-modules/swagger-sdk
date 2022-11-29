@@ -1,0 +1,67 @@
+{
+	"openapi": "3.0.2",
+	"info": {
+		"title": "Coldbox Rest - OpenAPI 3.0",
+		"description": "This is a sample coldbox rest application",
+		"termsOfService": "",
+		"contact": {
+			"email": "apiteam@swagger.io"
+		},
+		"license": {
+			"name": "Apache 2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+		},
+		"version": "1.0.17"
+	},
+	"externalDocs": {
+		"description": "Find out more about Swagger",
+		"url": "http://swagger.io"
+	},
+	"servers": [
+		{
+			"url": "/api/v3"
+		},
+        {
+			"url": "/api/v2"
+		}
+	],
+	"tags": [
+		{
+			"name": "users",
+			"description": "Operations about users"
+		},
+        {
+			"name": "posts",
+			"description": "Operations about posts"
+		},
+        {
+			"name": "media",
+			"description": "Operations about media"
+		}
+	],
+    "components": {
+        "securitySchemes": {
+            "APIKey" : {
+                "type" 			: "apiKey",
+                "description" 	: "Bearer Token",
+                "name" 			: "Authorization: Bearer",
+                "in" 			: "header"
+            }
+        },
+        "schemas": {
+            "Pagination": { "$ref": "_schemas/pagination.json" },
+            "User": { "$ref": "paths/users/_schemas/user.json" },
+            "Post": { "$ref": "paths/posts/_schemas/post.json" },
+            "Media": { "$ref": "paths/media/_schemas/media.json" },
+            "BookMedia": { "$ref": "paths/media/_schemas/bookMedia.json" },
+            "MusicMedia": { "$ref": "paths/media/_schemas/musicMedia.json" }
+        }
+    },
+	"paths": {
+        "$extend": [
+            { "$ref": "paths/users/users.json" },
+            { "$ref": "paths/posts/posts.json" },
+            { "$ref": "paths/media/media.json" }
+        ]
+    }
+}

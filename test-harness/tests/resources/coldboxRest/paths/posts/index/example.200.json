@@ -1,0 +1,37 @@
+{
+    "data": {
+        "pagination": {
+            "maxRows": 100,
+            "totalPages": 10,
+            "offset": 0,
+            "page": 1,
+            "totalRecords": 1000
+        },
+        "results": [
+            {
+                "id": "1",
+                "title": "Washingtons Newburgh Address",
+                "body": "While I give you these assurances, and pledge myself in the most unequivocal manner, to exert whatever ability I am possessed of, in your favor—let me entreat you, Gentlemen, on your part, not to take any measures, which, viewed in the calm light of reason, will lessen the dignity, & sully the glory you have hitherto maintained—let me request you to rely on the plighted faith of your Country, and place a full confidence in the purity of the intentions of Congress",
+                "author": {
+                    "id": "1",
+                    "firstName": "George",
+                    "lastName": "Washington",
+                    "emailAddress": "potus1@gmail.com"
+                }
+            },
+            {
+                "id": "2",
+                "title": "Washingtons Inaugural Address",
+                "body": "I dwell on this prospect with every satisfaction which an ardent love for my Country can inspire: since there is no truth more thoroughly established, than that there exists in the economy and course of nature, an indissoluble union between virtue and happiness, between duty and advantage, between the genuine maxims of an honest and magnanimous policy, and the solid rewards of public prosperity and felicity: Since we ought to be no less persuaded that the propitious smiles of Heaven, can never be expected on a nation that disregards the eternal rules of order and right, which Heaven itself has ordained: And since the preservation of the sacred fire of liberty, and the destiny of the Republican model of Government, are justly considered as deeply, perhaps as finally staked, on the experiment entrusted to the hands of the American people",
+                "author": {
+                    "id": "1",
+                    "firstName": "George",
+                    "lastName": "Washington",
+                    "emailAddress": "potus1@gmail.com"
+                }
+            },
+        ]
+    },
+    "messages": [],
+    "error": false
+}

@@ -1,0 +1,25 @@
+{
+	"type": "object",
+	"properties": {
+		"maxRows": {
+			"description": "Maximum number of rows returned.",
+			"type": "integer"
+		},
+		"totalPages": {
+			"description": "Total pages available.",
+			"type": "integer"
+		},
+        "offset": {
+			"description": "Number of rows skipped.",
+			"type": "integer"
+		},
+        "page": {
+			"description": "Current page number.",
+			"type": "integer"
+		},
+		"totalRecords": {
+			"description": "Total number of records available.",
+			"type": "integer"
+		}
+	}
+}

@@ -1,0 +1,28 @@
+{
+    "/media": {
+        "get": {
+            "summary": "Paginate media",
+            "operationId": "media.index",
+            "tags": ["media"],
+            "parameters": {
+                "$ref": "index/parameters.json#/parameters"
+            },
+            "responses": {
+                "$ref": "index/responses.json"
+            }
+        } 
+    },
+    "/media/{id}": {
+        "get": {
+            "summary": "Show a media item",
+            "operationId": "media.show",
+            "tags": ["media"],
+            "parameters": {
+                "$ref": "show/parameters.json#/parameters"
+            },
+            "responses": {
+                "$ref": "show/responses.json"
+            }
+        }
+    }
+}

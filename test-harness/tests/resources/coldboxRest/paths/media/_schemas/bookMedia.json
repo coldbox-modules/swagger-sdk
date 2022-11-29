@@ -1,0 +1,13 @@
+{
+    "allOf": [
+        { "$ref": "##/components/schemas/Media" },
+        {
+            "type": "object",
+            "properties": {
+                "isbn": {
+                    "type": "string"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "data": {
+        "id": "1",
+        "firstName": "George",
+        "lastName": "Washington",
+        "emailAddress": "potus@gmail.com"
+    },
+    "messages": [],
+    "error": false
+}
