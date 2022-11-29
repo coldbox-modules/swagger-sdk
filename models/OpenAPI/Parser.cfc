@@ -264,8 +264,11 @@ component name="OpenAPIParser" accessors="true" {
 	**/
 	private function fetchDocumentReference( required string $ref ){
 
+        // double pound ## means we want to preserve the swagger $ref pointer (just remove the extra #)
+        if( left( $ref, 2 ) == chr( 35 ) & chr( 35 ) ){
+            return  { "$ref": right( $ref, ( len( $ref ) - 1 ) ) };
 		//resolve internal refrences before looking for externals
-		if( left( $ref, 1 ) == chr( 35 )){
+        } else if( left( $ref, 1 ) == chr( 35 )){
 			var FilePath = "";
 			var XPath = right( $ref, len( $ref ) - 1 );
 		} else {
