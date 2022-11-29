@@ -160,7 +160,7 @@ component name="OpenAPIParser" accessors="true" {
 
 
     /**
-	* Parses API Document $allOf notations recursively
+	* Parses API Document $extend notations recursively
 	*
 	* @param APIDoc		The struct representation of the API Document
 	* @param [XPath]	The XPath to zoom the parsed document to during recursion
@@ -173,7 +173,8 @@ component name="OpenAPIParser" accessors="true" {
 			}
 		} else if( isStruct( DocItem ) ) {
 
-			var compositionKeys = [ "$extend", "$allOf", "$oneOf" ]; // deprecated: $allOf, $oneOf
+			// $extend is a special key which enables merging json structs
+            var compositionKeys = [ "$extend" ];
 
 			for( var composition in compositionKeys ){
 
