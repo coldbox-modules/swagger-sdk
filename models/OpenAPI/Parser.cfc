@@ -143,7 +143,7 @@ component name="OpenAPIParser" accessors="true" {
 					structKeyExists( DocItem[ key ], "$ref" )
 				) {
 
-					DocItem[ key ] = fetchDocumentReference( DocItem[ key ][ "$ref" ] );
+					DocItem[ key ] = parseDocumentReferences( fetchDocumentReference( DocItem[ key ][ "$ref" ] ) );
 
 				} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
 
@@ -193,9 +193,9 @@ component name="OpenAPIParser" accessors="true" {
 						structKeyExists( DocItem[ key ], composition ) &&
 						isArray( DocItem[ key ][ composition ] )
 					) {
-						DocItem[ key ] = parseDocumentReferences( extendObject( DocItem[ key ][ composition ] ) );
+						DocItem[ key ] = extendObject( DocItem[ key ][ composition ] );
 					} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
-						DocItem[ key ] = parseDocumentInheritance( parseDocumentReferences( DocItem[ key ] ) );
+						DocItem[ key ] = parseDocumentInheritance( DocItem[ key ] );
 					}
 
 				}
