@@ -137,6 +137,14 @@ component name="OpenAPIParser" accessors="true" {
 
 			for( var key in DocItem){
 
+                // If `DocItem[ key ]` is an instance of Parser, we need to flattin it to a CFML struct
+				if ( 
+					isStruct( DocItem[ key ] ) && 
+					findNoCase( "Parser", getMetaData( DocItem[ key ] ).name ) 
+				) {
+					DocItem[ key ] = DocItem[ key ].getNormalizedDocument();
+				}
+                
                 if (
 					isStruct( DocItem[ key ] )
 					&&
