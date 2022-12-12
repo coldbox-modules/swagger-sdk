@@ -10,6 +10,17 @@
             "responses": {
                 "$ref": "index/responses.json"
             }
+        }, 
+        "post": {
+            "summary": "Create a post",
+            "operationId": "posts.create",
+            "tags": ["posts"],
+            "requestBody": {
+                "$ref": "create/requestBody.json"
+            },
+            "responses": {
+                "$ref": "create/responses.json"
+            }
         } 
     },
     "/posts/{id}": {

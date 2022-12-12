@@ -133,7 +133,14 @@ component name="OpenAPIParser" accessors="true" {
 		} else if( isStruct( DocItem ) ) {
 
             //handle top-level values, if they exist
-			if( structKeyExists( DocItem, "$ref" ) ) return fetchDocumentReference( DocItem[ "$ref" ] );
+			if( structKeyExists( DocItem, "$ref" ) ) {
+                // special handling for double pound signs
+                if( left( DocItem[ "$ref" ], 2 ) == chr( 35 ) & chr( 35 ) ) {
+                    DocItem[ "$ref" ] = right( DocItem[ "$ref" ], ( len( DocItem[ "$ref" ] ) - 1 ) );
+                    return DocItem;
+                }
+                return fetchDocumentReference( DocItem[ "$ref" ] );
+            }
 
 			for( var key in DocItem){
 
@@ -273,8 +280,14 @@ component name="OpenAPIParser" accessors="true" {
 	**/
 	private function fetchDocumentReference( required string $ref ){
 
+        /* if ( $ref == chr( 35 ) & chr( 35 ) & "/components/requestBodies/PostBody" ) {
+            writeDump( var=$ref, output="console" );
+        } */
+        
+        
         // double pound ## means we want to preserve the swagger $ref pointer (just remove the extra #)
         if( left( $ref, 2 ) == chr( 35 ) & chr( 35 ) ){
+            writeDump( var=right( $ref, ( len( $ref ) - 1 ) ), output="console" );
             return  { "$ref": right( $ref, ( len( $ref ) - 1 ) ) };
 		//resolve internal refrences before looking for externals
         } else if( left( $ref, 1 ) == chr( 35 )){

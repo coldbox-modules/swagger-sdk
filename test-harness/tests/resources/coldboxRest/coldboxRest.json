@@ -52,9 +52,13 @@
             "Pagination": { "$ref": "_schemas/pagination.json" },
             "User": { "$ref": "paths/users/_schemas/user.json" },
             "Post": { "$ref": "paths/posts/_schemas/post.json" },
+            "PostBody": { "$ref": "paths/posts/_schemas/postBody.json" },
             "Media": { "$ref": "paths/media/_schemas/media.json" },
             "BookMedia": { "$ref": "paths/media/_schemas/bookMedia.json" },
             "MusicMedia": { "$ref": "paths/media/_schemas/musicMedia.json" }
+        },
+        "requestBodies": {
+            "PostBody": { "$ref": "paths/posts/_bodies/postBody.json" }
         }
     },
 	"paths": {

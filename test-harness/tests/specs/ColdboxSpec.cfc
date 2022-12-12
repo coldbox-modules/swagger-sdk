@@ -45,6 +45,8 @@ component extends="BaseOpenAPISpec"{
 			it( "Can parse the apiDoc", function(){
 				var apiDoc = parseApiDoc();
 
+                debug( serializeJson( apiDoc ) );
+
                 // it can have multiple servers
                 expect( apiDoc ).toHaveKey( "servers" );
                 expect( apiDoc.servers ).toBeArray();
@@ -94,6 +96,10 @@ component extends="BaseOpenAPISpec"{
                 for ( var item in expectedKeys ) {
                     expect( apiDoc.paths[ "/users" ].get.responses[ "200" ].content[ "application/json" ].schema.properties.data.properties.results.items.properties ).toHaveKey( item );
                 }
+
+                // expect the requestBody reference to have one pound sign
+                expect( apiDoc.paths[ "/posts" ].post.requestBody ).toHaveKey( "$ref" );
+                expect( left( apiDoc.paths[ "/posts" ].post.requestBody[ '$ref' ], 2 ) ).toBe( "#chr( 35 )#/" );
 
 			});
 
