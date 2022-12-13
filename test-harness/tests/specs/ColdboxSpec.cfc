@@ -45,8 +45,6 @@ component extends="BaseOpenAPISpec"{
 			it( "Can parse the apiDoc", function(){
 				var apiDoc = parseApiDoc();
 
-                debug( serializeJson( apiDoc ) );
-
                 // it can have multiple servers
                 expect( apiDoc ).toHaveKey( "servers" );
                 expect( apiDoc.servers ).toBeArray();
