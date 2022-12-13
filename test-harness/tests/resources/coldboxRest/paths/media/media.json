@@ -10,6 +10,17 @@
             "responses": {
                 "$ref": "index/responses.json"
             }
+        },
+        "post": {
+            "summary": "Create media",
+            "operationId": "media.create",
+            "tags": ["media"],
+            "requestBody": {
+                "$ref": "create/requestBody.json"
+            },
+            "responses": {
+                "$ref": "create/responses.json"
+            }
         } 
     },
     "/media/{id}": {

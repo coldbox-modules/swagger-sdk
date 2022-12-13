@@ -1,0 +1,21 @@
+{
+    "$extend": [ 
+        {
+            "$ref": "../../../_schemas/response.json"
+        }, 
+        {
+            "properties": {
+                "data": {
+                    "oneOf": [
+                        { "$ref": "##/components/schemas/BookMedia" },
+                        { "$ref": "##/components/schemas/MusicMedia" }
+                    ],
+                    "discriminator": {
+                        "propertyName": "type"
+                    }
+                }
+            }
+        }   
+        
+    ]
+}

@@ -153,8 +153,7 @@ component name="OpenAPIParser" accessors="true" {
 				}
                 
                 if (
-					isStruct( DocItem[ key ] )
-					&&
+					isStruct( DocItem[ key ] ) &&
 					structKeyExists( DocItem[ key ], "$ref" )
 				) {
 
@@ -181,40 +180,33 @@ component name="OpenAPIParser" accessors="true" {
 	* @param [XPath]	The XPath to zoom the parsed document to during recursion
 	**/
 	public function parseDocumentInheritance( required any DocItem ){
-
+        
+        // If `DocItem` is an instance of Parser, we need to flattin it to a CFML struct
+        if ( 
+            isStruct( DocItem ) && 
+            findNoCase( "Parser", getMetaData( DocItem ).name ) 
+        ) {
+            DocItem = DocItem.getNormalizedDocument();
+        }
+        
         if( isArray( DocItem ) ) {
             for( var i = 1; i <= arrayLen( DocItem ); i++){
 				DocItem[ i ] = parseDocumentInheritance( DocItem[ i ] );
 			}
-		} else if( isStruct( DocItem ) ) {
+        } else if( isStruct( DocItem ) ) {
 
-			// $extend is a special key which enables merging json structs
-            var compositionKeys = [ "$extend" ];
+            // handle top-level extension
+            if( structKeyExists( DocItem, "$extend" ) ) {
+                return extendObject( parseDocumentInheritance( DocItem[ "$extend" ] ) );
+            }
 
-			for( var composition in compositionKeys ){
+            for( var key in DocItem ){
+                
+                if( isStruct( DocItem[ key ] ) || isArray( DocItem[ key ] ) ){
+                    DocItem[ key ] = parseDocumentInheritance( DocItem[ key ] );
+                }
 
-				// handle top-level extension
-				if(
-					structKeyExists( DocItem, composition ) &&
-					isArray( DocItem[ composition ] )
-				) {
-					return extendObject( DocItem[ composition ] );
-				}
-
-				for( var key in DocItem){
-
-					if (
-						isStruct( DocItem[ key ] ) &&
-						structKeyExists( DocItem[ key ], composition ) &&
-						isArray( DocItem[ key ][ composition ] )
-					) {
-						DocItem[ key ] = extendObject( DocItem[ key ][ composition ] );
-					} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
-						DocItem[ key ] = parseDocumentInheritance( DocItem[ key ] );
-					}
-
-				}
-			}
+            }
 
 		}
 
@@ -230,17 +222,12 @@ component name="OpenAPIParser" accessors="true" {
      * @objects
      */
     function extendObject( array objects ) {
+        
         var output = {};
         objects.each( function( item, index ) {
             if ( isStruct( item ) ) {
-			
-				// If `item` is an instance of Parser, we need to flattin it to a CFML struct
-                if ( findNoCase( "Parser", getMetaData( item ).name ) ) {
-                    item = item.getNormalizedDocument();
-                }
-			
                 item.each( function( key, value ) {
-
+                    
                     if (
                         output.keyExists( key ) &&
                         isStruct( output[ key ] )

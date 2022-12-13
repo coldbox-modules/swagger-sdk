@@ -1,0 +1,9 @@
+{
+    "summary": "BookMediaBody",
+    "description": "An example book media",
+    "value": {
+        "title": "Book Title",
+        "type": "book",
+        "isbn": "12345678"
+    }
+}

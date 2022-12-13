@@ -55,10 +55,13 @@
             "PostBody": { "$ref": "paths/posts/_schemas/postBody.json" },
             "Media": { "$ref": "paths/media/_schemas/media.json" },
             "BookMedia": { "$ref": "paths/media/_schemas/bookMedia.json" },
-            "MusicMedia": { "$ref": "paths/media/_schemas/musicMedia.json" }
+            "MusicMedia": { "$ref": "paths/media/_schemas/musicMedia.json" },
+            "BookMediaBody": { "$ref": "paths/media/_schemas/bookMediaBody.json" },
+            "MusicMediaBody": { "$ref": "paths/media/_schemas/musicMediaBody.json" }
         },
         "requestBodies": {
-            "PostBody": { "$ref": "paths/posts/_bodies/postBody.json" }
+            "PostBody": { "$ref": "paths/posts/_bodies/postBody.json" },
+            "MediaBody": { "$ref": "paths/media/_bodies/mediaBody.json" }
         }
     },
 	"paths": {
