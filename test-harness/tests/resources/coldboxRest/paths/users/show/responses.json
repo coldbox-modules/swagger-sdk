@@ -1,0 +1,27 @@
+{
+    "200": {
+        "description": "Success",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$extend": [ 
+                        {
+                            "$ref": "../../../_schemas/response.json"
+                        }, 
+                        {
+                            "properties": {
+                                "data": {
+                                    "$ref": "##/components/schemas/User" 
+                                }
+                            }
+                        }   
+                        
+                    ]
+				},
+                "example": {
+					"$ref": "example.200.json"
+				}
+            }
+        }
+	}
+}

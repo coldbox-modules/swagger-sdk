@@ -1,0 +1,13 @@
+{
+    "parameters": [
+        {
+            "name": "id",
+            "description": "The id of the record to show",
+            "in": "path",
+            "required": true,
+            "schema": {
+                "type": "integer"
+            }
+        }
+    ]
+}

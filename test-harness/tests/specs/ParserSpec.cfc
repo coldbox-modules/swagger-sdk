@@ -58,19 +58,15 @@ component extends="BaseOpenAPISpec"{
 	function runParserRecursionTests( required Parser, required boolean testObjects=false ){
 		if( ARGUMENTS.testObjects ){
 
-			it( "Tests for the recursive presence of OpenAPIDocument objects within Parser #Parser.getSchemaType()# document object" , function(){
+			it( "Tests for the recursive presence of structs within Parser #Parser.getSchemaType()# document object" , function(){
 				var ParserDoc = Parser.getDocumentObject();
 				expect( ParserDoc ).toBeInstanceOf( "Document" );
 				expect( ParserDoc ).toHaveKey( "getDocument" );
 				var APIDoc = ParserDoc.getDocument();
 				expect( APIDoc ).toBeStruct();
 				expect( APIDoc ).toHaveKey( "paths" );
-				expect( APIDoc.paths ).toBeInstanceOf( "Parser" );
-				runParserTypeChecks( APIDoc.paths );
-				var paths = APIDoc.paths.getDocumentObject().getNormalizedDocument();
-				expect( paths ).toHaveKey( "/pets" );
-
-
+				expect( APIDoc.paths ).toBeStruct();
+				expect( APIDoc.paths ).toHaveKey( "/pets" );
 			});
 
 		}
@@ -101,7 +97,7 @@ component extends="BaseOpenAPISpec"{
 			expect( NormalizedDocument.paths[ '/pet/{petId}' ] ).toHaveDeepKey( "responses" );
 
 			expect( arrayLen( structFindKey( NormalizedDocument, "$ref" ) ) ).toBe( 0 );
-			expect( arrayLen( structFindKey( NormalizedDocument, "$allOf" ) ) ).toBe( 0 );
+            expect( arrayLen( structFindKey( NormalizedDocument, "$extend" ) ) ).toBe( 0 );
 
 		});
 

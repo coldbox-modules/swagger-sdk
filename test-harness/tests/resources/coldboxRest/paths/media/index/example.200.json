@@ -1,0 +1,27 @@
+{
+    "data": {
+        "pagination": {
+            "maxRows": 100,
+            "totalPages": 10,
+            "offset": 0,
+            "page": 1,
+            "totalRecords": 1000
+        },
+        "results": [
+            {
+                "id": "1",
+                "title": "The Great Gatsby",
+                "type": "book",
+                "isbn": "1234567"
+            },
+            {
+                "id": "2",
+                "title": "Today",
+                "type": "music",
+                "artist": "Smashing Pumpkins"
+            }
+        ]
+    },
+    "messages": [],
+    "error": false
+}

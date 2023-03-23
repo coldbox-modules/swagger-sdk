@@ -1,0 +1,39 @@
+{
+    "/media": {
+        "get": {
+            "summary": "Paginate media",
+            "operationId": "media.index",
+            "tags": ["media"],
+            "parameters": {
+                "$ref": "index/parameters.json#/parameters"
+            },
+            "responses": {
+                "$ref": "index/responses.json"
+            }
+        },
+        "post": {
+            "summary": "Create media",
+            "operationId": "media.create",
+            "tags": ["media"],
+            "requestBody": {
+                "$ref": "create/requestBody.json"
+            },
+            "responses": {
+                "$ref": "create/responses.json"
+            }
+        } 
+    },
+    "/media/{id}": {
+        "get": {
+            "summary": "Show a media item",
+            "operationId": "media.show",
+            "tags": ["media"],
+            "parameters": {
+                "$ref": "show/parameters.json#/parameters"
+            },
+            "responses": {
+                "$ref": "show/responses.json"
+            }
+        }
+    }
+}
