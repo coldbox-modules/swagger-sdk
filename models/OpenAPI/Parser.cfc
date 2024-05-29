@@ -144,14 +144,19 @@ component name="OpenAPIParser" accessors="true" {
 
 			for( var key in DocItem){
 
+				if( isNull( docItem[ key ] ) ){
+					DocItem[ key ] = nullValue();
+					continue;
+				}
+
                 // If `DocItem[ key ]` is an instance of Parser, we need to flattin it to a CFML struct
-				if ( 
-					isStruct( DocItem[ key ] ) && 
-					findNoCase( "Parser", getMetaData( DocItem[ key ] ).name ) 
+				if (
+					isStruct( DocItem[ key ] ) &&
+					findNoCase( "Parser", getMetaData( DocItem[ key ] ).name )
 				) {
 					DocItem[ key ] = DocItem[ key ].getNormalizedDocument();
 				}
-                
+
                 if (
 					isStruct( DocItem[ key ] ) &&
 					structKeyExists( DocItem[ key ], "$ref" )
@@ -180,15 +185,15 @@ component name="OpenAPIParser" accessors="true" {
 	* @param [XPath]	The XPath to zoom the parsed document to during recursion
 	**/
 	public function parseDocumentInheritance( required any DocItem ){
-        
+
         // If `DocItem` is an instance of Parser, we need to flattin it to a CFML struct
-        if ( 
-            isStruct( DocItem ) && 
-            findNoCase( "Parser", getMetaData( DocItem ).name ) 
+        if (
+            isStruct( DocItem ) &&
+            findNoCase( "Parser", getMetaData( DocItem ).name )
         ) {
             DocItem = DocItem.getNormalizedDocument();
         }
-        
+
         if( isArray( DocItem ) ) {
             for( var i = 1; i <= arrayLen( DocItem ); i++){
 				DocItem[ i ] = parseDocumentInheritance( DocItem[ i ] );
@@ -201,7 +206,11 @@ component name="OpenAPIParser" accessors="true" {
             }
 
             for( var key in DocItem ){
-                
+
+				if( isNull( docItem[ key ] ) ){
+					DocItem[ key ] = nullValue();
+					continue;
+				}
                 if( isStruct( DocItem[ key ] ) || isArray( DocItem[ key ] ) ){
                     DocItem[ key ] = parseDocumentInheritance( DocItem[ key ] );
                 }
@@ -222,12 +231,12 @@ component name="OpenAPIParser" accessors="true" {
      * @objects
      */
     function extendObject( array objects ) {
-        
+
         var output = {};
         objects.each( function( item, index ) {
             if ( isStruct( item ) ) {
                 item.each( function( key, value ) {
-                    
+
                     if (
                         output.keyExists( key ) &&
                         isStruct( output[ key ] )
@@ -287,7 +296,7 @@ component name="OpenAPIParser" accessors="true" {
 
 		var ReferenceDocument = {};
 
-		try{
+		// try{
 
 			//Files receive a parser reference
 			if( left( FilePath, 4 ) == 'http'  ){
@@ -316,19 +325,19 @@ component name="OpenAPIParser" accessors="true" {
 
 			}
 
-		} catch( any e ){
+		// } catch( any e ){
 
-            // if this is a known exception or occured via recursion, rethrow the exception so the user knows which JSON file triggered it
-			if ( listFindNoCase( "SwaggerSDK.ParserException,CBSwagger.InvalidReferenceDocumentException", e.type ) ) {
-                rethrow;
-            }
-            
-            throw(
-				type="CBSwagger.InvalidReferenceDocumentException",
-				message="The $ref file pointer of #$ref# could not be loaded and parsed as a valid object.  If your $ref file content is an array, please nest the array within an object as a named key."
-			);
+        //     // if this is a known exception or occured via recursion, rethrow the exception so the user knows which JSON file triggered it
+		// 	if ( listFindNoCase( "SwaggerSDK.ParserException,CBSwagger.InvalidReferenceDocumentException", e.type ) ) {
+        //         rethrow;
+        //     }
 
-		}
+        //     throw(
+		// 		type="CBSwagger.InvalidReferenceDocumentException",
+		// 		message="The $ref file pointer of #$ref# could not be loaded and parsed as a valid object.  If your $ref file content is an array, please nest the array within an object as a named key."
+		// 	);
+
+		// }
 
         return ReferenceDocument;
 	}
