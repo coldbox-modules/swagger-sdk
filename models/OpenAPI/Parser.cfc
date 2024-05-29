@@ -296,7 +296,7 @@ component name="OpenAPIParser" accessors="true" {
 
 		var ReferenceDocument = {};
 
-		// try{
+		try{
 
 			//Files receive a parser reference
 			if( left( FilePath, 4 ) == 'http'  ){
@@ -325,19 +325,19 @@ component name="OpenAPIParser" accessors="true" {
 
 			}
 
-		// } catch( any e ){
+		} catch( any e ){
 
-        //     // if this is a known exception or occured via recursion, rethrow the exception so the user knows which JSON file triggered it
-		// 	if ( listFindNoCase( "SwaggerSDK.ParserException,CBSwagger.InvalidReferenceDocumentException", e.type ) ) {
-        //         rethrow;
-        //     }
+            // if this is a known exception or occured via recursion, rethrow the exception so the user knows which JSON file triggered it
+			if ( listFindNoCase( "SwaggerSDK.ParserException,CBSwagger.InvalidReferenceDocumentException", e.type ) ) {
+                rethrow;
+            }
 
-        //     throw(
-		// 		type="CBSwagger.InvalidReferenceDocumentException",
-		// 		message="The $ref file pointer of #$ref# could not be loaded and parsed as a valid object.  If your $ref file content is an array, please nest the array within an object as a named key."
-		// 	);
+            throw(
+				type="CBSwagger.InvalidReferenceDocumentException",
+				message="The $ref file pointer of #$ref# could not be loaded and parsed as a valid object.  If your $ref file content is an array, please nest the array within an object as a named key. The message received was: #e.message# #e.detail#"
+			);
 
-		// }
+		}
 
         return ReferenceDocument;
 	}
