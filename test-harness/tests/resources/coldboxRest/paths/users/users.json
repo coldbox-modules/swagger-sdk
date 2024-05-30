@@ -1,0 +1,28 @@
+{
+    "/users": {
+        "get": {
+            "summary": "Paginate users",
+            "operationId": "users.index",
+            "tags": ["users"],
+            "parameters": {
+                "$ref": "index/parameters.json#/parameters"
+            },
+            "responses": {
+                "$ref": "index/responses.json"
+            }
+        }
+    },
+    "/users/{id}": {
+        "get": {
+            "summary": "Show a user",
+            "operationId": "users.show",
+            "tags": ["users"],
+            "parameters": {
+                "$ref": "show/parameters.json#/parameters"
+            },
+            "responses": {
+                "$ref": "show/responses.json"
+            }
+        }
+    }
+}

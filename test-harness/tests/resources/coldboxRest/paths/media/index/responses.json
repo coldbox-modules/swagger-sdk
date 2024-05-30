@@ -1,0 +1,47 @@
+{
+    "200": {
+        "description": "Success",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$extend": [ 
+                        { 
+                            "type": "object" 
+                        },
+                        {
+                            "$ref": "../../../_schemas/response.json"
+                        }, 
+                        {
+                            "properties": {
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "anyOf": [
+                                                    { "$ref": "##/components/schemas/BookMedia" },
+                                                    { "$ref": "##/components/schemas/MusicMedia" }
+                                                ],
+                                                "discriminator": {
+                                                    "propertyName": "type"
+                                                }
+                                            }
+                                        },
+                                        "pagination": {
+                                            "$ref": "##/components/schemas/Pagination"
+                                        }
+                                    }
+                                }
+                            }
+                        }    
+                        
+                    ]
+				},
+                "example": {
+					"$ref": "example.200.json"
+				}
+            }
+        }
+	}
+}

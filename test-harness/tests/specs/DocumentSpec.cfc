@@ -30,19 +30,13 @@ component extends="BaseOpenAPISpec"{
 					.toHaveKey( "getDocument" );
 
 				// test that path items have resource IDs
-				var instanceDoc = DocumentObject.getDocument();
+				var instanceDoc = DocumentObject.getNormalizedDocument();
 
-				for( var pathKey in instanceDoc[ "paths" ] ){
-
-					expect( instanceDoc[ "paths" ][ pathKey ] ).toHaveKey( "x-resourceId" );
-
-					if( structKeyExists( instanceDoc[ "paths" ][ pathKey ], "methods" ) ){
-						for( var methodKey in instanceDoc[ "paths" ][ pathKey ][ "methods" ] ){
-							expect( instanceDoc[ "paths" ][ pathKey ][ "methods" ][ methodKey ] ).toHaveKey( "x-resourceId" );
-						}
-					}
-				}
-
+				expect( instanceDoc ).toHaveKey( "openapi" )
+								.toHaveKey( "info" )
+								.toHaveKey( "paths" )
+								.toHaveKey( "servers" )
+								.toHaveKey( "tags" );
 			} );
 
 
@@ -70,6 +64,22 @@ component extends="BaseOpenAPISpec"{
 			});
 
 		} );
+
+		describe( "Core functionality tests", function(){
+
+			it( "Tests that an attempt to locate an invalid path with return a $ref object", function(){
+				var DocumentObject = getInstance( "OpenAPIDocument@SwaggerSDK" ).init( VARIABLES.testDocument );
+
+				expect( DocumentObject )
+					.toBeComponent()
+					.toHaveKey( "getDocument" );
+
+				var invalidPath = DocumentObject.locate( "foo.bar" );
+				expect( invalidPath ).toBeStruct().toHaveKey( "$ref" );
+				expect( invalidPath[ "$ref" ] ).toBe( "##/foo/bar" );
+
+			})
+		})
 	}
 
 }

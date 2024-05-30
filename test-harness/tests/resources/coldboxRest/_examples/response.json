@@ -1,0 +1,9 @@
+{
+    "summary": "Response",
+    "description": "A generic response",
+    "value": {
+        "error": false,
+        "data": {},
+        "messages": []
+    }
+}

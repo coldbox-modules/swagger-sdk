@@ -1,0 +1,18 @@
+{
+    "description": "Media to Create",
+    "required": true,
+    "content": {
+        "application/json": {
+            "schema": {
+                "anyOf": [
+                    { "$ref": "##/components/schemas/BookMediaBody" },
+                    { "$ref": "##/components/schemas/MusicMediaBody" }
+                ]
+            },
+            "examples": {
+                "BookMediaBody": { "$ref": "../_examples/bookMediaBody.json" },
+                "MusicMediaBody": { "$ref": "../_examples/musicMediaBody.json" }
+            }
+        }
+    }
+}

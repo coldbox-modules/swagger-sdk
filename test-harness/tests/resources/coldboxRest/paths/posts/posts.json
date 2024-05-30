@@ -1,0 +1,39 @@
+{
+    "/posts": {
+        "get": {
+            "summary": "Paginate posts",
+            "operationId": "posts.index",
+            "tags": ["posts"],
+            "parameters": {
+                "$ref": "index/parameters.json#/parameters"
+            },
+            "responses": {
+                "$ref": "index/responses.json"
+            }
+        }, 
+        "post": {
+            "summary": "Create a post",
+            "operationId": "posts.create",
+            "tags": ["posts"],
+            "requestBody": {
+                "$ref": "create/requestBody.json"
+            },
+            "responses": {
+                "$ref": "create/responses.json"
+            }
+        } 
+    },
+    "/posts/{id}": {
+        "get": {
+            "summary": "Show a post",
+            "operationId": "posts.show",
+            "tags": ["posts"],
+            "parameters": {
+                "$ref": "show/parameters.json#/parameters"
+            },
+            "responses": {
+                "$ref": "show/responses.json"
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "data": {
+        "pagination": {
+            "maxRows": 100,
+            "totalPages": 10,
+            "offset": 0,
+            "page": 1,
+            "totalRecords": 1000
+        },
+        "results": [
+            {
+                "id": "1",
+                "firstName": "George",
+                "lastName": "Washington",
+                "emailAddress": "potus1@gmail.com"
+            },
+            {
+                "id": "2",
+                "firstName": "John",
+                "lastName": "Adams",
+                "emailAddress": "potus2@gmail.com"
+            } 
+        ]
+    },
+    "messages": [],
+    "error": false
+}

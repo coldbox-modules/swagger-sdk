@@ -13,8 +13,6 @@ component {
 	this.version = "@build.version@+@build.number@";
 	this.viewParentLookup = true;
 	this.layoutParentLookup = true;
-	// Module Entry Point
-	this.entryPoint = "SwaggerSDK";
 	// Model Namespace
 	this.modelNamespace = "SwaggerSDK";
 	// CF Mapping

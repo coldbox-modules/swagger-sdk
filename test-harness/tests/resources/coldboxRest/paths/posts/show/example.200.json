@@ -1,0 +1,15 @@
+{
+    "data": {
+        "id": "1",
+        "title": "Washingtons Newburgh Address",
+        "body": "While I give you these assurances, and pledge myself in the most unequivocal manner, to exert whatever ability I am possessed of, in your favor—let me entreat you, Gentlemen, on your part, not to take any measures, which, viewed in the calm light of reason, will lessen the dignity, & sully the glory you have hitherto maintained—let me request you to rely on the plighted faith of your Country, and place a full confidence in the purity of the intentions of Congress",
+        "author": {
+            "id": "1",
+            "firstName": "George",
+            "lastName": "Washington",
+            "emailAddress": "potus1@gmail.com"
+        }
+    },
+    "messages": [],
+    "error": false
+}

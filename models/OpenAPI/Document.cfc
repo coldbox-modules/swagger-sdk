@@ -6,6 +6,7 @@
  */
 component name="OpenAPIDocument" accessors="true" {
 
+	property name="RootDocument";
 	property name="Document";
 	property name="XPath";
 
@@ -21,16 +22,18 @@ component name="OpenAPIDocument" accessors="true" {
 	 **/
 	Document function init( required struct Doc, required string XPath="" ){
 
+		// Scope the root Document to handle internal inheritance $refs
+		setRootDocument( arguments.Doc );
+
+		// Set the working document which will be returned when normalized
 		setDocument( arguments.Doc );
 
+		// Zoom if requested
 		if( len( arguments.XPath ) ){
+			arguments.XPath = arrayToList( listToArray( arguments.XPath, "/" ), "." );
 			this
 				.setXPath( arguments.XPath )
 				.zoomToXPath();
-		}
-
-		if( isStruct( arguments.Doc ) ){
-			setResourceIds( arguments.Doc );
 		}
 
 		return this;
@@ -86,111 +89,52 @@ component name="OpenAPIDocument" accessors="true" {
 	 * @param APIDoc 	The document to normalized.  Defaults to the entity document
 	 **/
 	function getNormalizedDocument( any APIDoc=this.getDocument() ){
+		if( isArray( arguments.APIDoc ) ){
+			 return arrayMap( arguments.APIDoc, function( item ) {
+                return getNormalizedDocument( item );
+             } );
+        } else if ( isObject( arguments.APIDoc ) && findNoCase( "Parser", getMetaData( arguments.APIDoc ).name ) ) {
+            if ( !structKeyExists( arguments.APIDoc, "getDocumentObject" )  ) {
+                throwForeignObjectTypeException( arguments.APIDoc );
+                throw(
+                    type = "SwaggerSDK.NormalizationException",
+                    message = "SwaggerSDK doesn't know what do with an object of type #getMetaData( arguments.APIDoc ).name#."
+                );
+            }
 
-		if( isArray( APIDoc ) ){
-			 return APIDoc;
-		}
+            return arguments.APIDoc.getDocumentObject().getNormalizedDocument();
+        } else if ( isStruct( arguments.APIDoc ) ) {
+            return structMap( arguments.APIDoc, function( key, value ) {
+				// allow explicit nulls in sample docs to pass through
+                return !isNull( value ) ? getNormalizedDocument( value ) : javacast( "null", 0 );
+            } );
+        }
 
-		var NormalizedDoc = structCopy( arguments.APIDoc );
-
-		for ( var key in NormalizedDoc ){
-
-			if( isObject( NormalizedDoc[ key ] ) && findNoCase( "Parser", getMetaData( NormalizedDoc[ key ] ).name ) ){
-
-				if( !structKeyExists( NormalizedDoc[ key ], "getDocumentObject" )  ){
-					throwForeignObjectTypeException( NormalizedDoc[ key ] );
-					throw( type="SwaggerSDK.NormalizationException" ,message="SwaggerSDK doesn't know what do with an object of type #getMetaData( NormalizedDoc[ key ] ).name#." );
-				}
-
-				NormalizedDoc[ key ]=NormalizedDoc[ key ].getDocumentObject().getNormalizedDocument();
-
-			} else if( isStruct( normalizedDoc[ key ] ) ){
-
-				NormalizedDoc[ key ] = getNormalizedDocument( NormalizedDoc[ key ] );
-
-			} else if( isArray( NormalizedDoc[ key ] ) ){
-
-				for( var i = 1; i <= arrayLen( NormalizedDoc[ key ] ); i++ ){
-
-					if( isStruct( NormalizedDoc[ key ][ i ] ) ) NormalizedDoc[ key ][ i ] = getNormalizedDocument( NormalizedDoc[ key ][ i ] );
-
-					if( isObject( NormalizedDoc[ key ][ i ] ) ) {
-
-						if( !structKeyExists( NormalizedDoc[ key ][ i ], "getDocumentObject" )  ){
-							throwForeignObjectTypeException( NormalizedDoc[ key ][ i ] );
-						}
-
-						NormalizedDoc[ key ][ i ] = NormalizedDoc[ key ][ i ].getDocumentObject().getNormalizedDocument();
-
-					}
-
-				}
-
-			}
-		}
-
-		setResourceIds( normalizedDoc );
-
-		return NormalizedDoc;
+        return arguments.APIDoc;
 	}
 
 	/**
 	 * Helper function to locate deeply nested document items
 	 *
 	 * @param key the key to locate
-	 * @return any the value of the key or null if the key is not found
+	 * @return any the value of the key or a `$ref` object if the key is not found
 	 * @usage locate('key.subkey.subsubkey.waydowndeepsubkey')
 	 **/
 	any function locate( string key ){
-		var document = this.getDocument();
+		var rootDocument = this.getRootDocument();
 
-		if( structKeyExists( document, arguments.key ) ){
-			return document[ arguments.key ];
+		if( structKeyExists( rootDocument, arguments.key ) ){
+			return rootDocument[ arguments.key ];
+		} else if( isDefined( 'rootDocument.#arguments.key#' ) ){
+				return evaluate( 'rootDocument.#arguments.key#' );
 		} else {
-			if( isDefined( 'document.#arguments.key#' ) ){
-				return evaluate( 'document.#arguments.key#' );
-			}
+			return { "$ref" : "##/#arrayToList( listToArray( arguments.key, "." ), "/" )#"};
 		}
-
-		return document;
 	}
 
 	/********************************************************************************/
 	/*  PRIVATE FUNCTIONS
 	/********************************************************************************/
-
-	/**
-	 * Sets the resourceId extension of a document path
-	 *
-	 * @param resourceDoc	The document to parse for x-resourceId nodes
-	 * @param hashPrefix		The prefix to use when hashing the x-resourceId value
-	 **/
-	private void function setResourceIds(required struct resourceDoc, string hashPrefix="" ){
-		var appendableNodes = [ "paths","get","post","put","patch","delete","head","option" ];
-
-		for ( var resourceKey in appendableNodes ){
-
-			if(  structKeyExists( resourceDoc, resourceKey ) && isStruct( resourceDoc[ resourceKey ] ) ){
-				for( var pathKey in resourceDoc[ resourceKey ] ){
-					if( !isStruct( resourceDoc[ resourceKey ][ pathKey ] ) ) continue;
-
-					resourceDoc[ resourceKey ][ pathKey ].put( "x-resourceId", lcase( hashPrefix & hash( pathKey ) ) );
-
-					//recurse, if necessary
-					for( var subKey in resourceDoc[ resourceKey ][ pathKey ] ){
-						if(
-							arrayFindNoCase( appendableNodes, subKey )
-							&&
-							isStruct( resourceDoc[ resourceKey ][ pathKey ][ subKey ] )
-						) {
-							resourceDoc[ resourceKey ][ pathKey ][ subKey ].put( "x-resourceId", lcase( hashPrefix & hash( pathKey & subkey ) ) );
-						}
-					}
-				}
-			}
-		}
-
-	}
 
 	/**
 	* Throws a foreign object type exception if detected when normalizing a document

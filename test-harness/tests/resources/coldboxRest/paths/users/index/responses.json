@@ -1,0 +1,41 @@
+{
+    "200": {
+        "description": "Success",
+        "content": {
+            "application/json": {
+                "schema": {
+                    "$extend": [ 
+                        { 
+                            "type": "object" 
+                        },
+                        {
+                            "$ref": "../../../_schemas/response.json"
+                        }, 
+                        {
+                            "properties": {
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "../_schemas/user.json" 
+                                            }
+                                        },
+                                        "pagination": {
+                                            "$ref": "##/components/schemas/Pagination"
+                                        }
+                                    }
+                                }
+                            }
+                        }    
+                        
+                    ]
+				},
+                "example": {
+					"$ref": "example.200.json"
+				}
+            }
+        }
+	}
+}

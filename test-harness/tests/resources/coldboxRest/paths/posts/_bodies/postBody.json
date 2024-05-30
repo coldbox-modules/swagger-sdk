@@ -1,0 +1,15 @@
+{
+    "description": "Post to Create",
+    "required": true,
+    "content": {
+        "application/json": {
+            "schema": { "$ref": "##/components/schemas/PostBody" },
+            "example":  {
+                "id": "1",
+                "title": "Washingtons Newburgh Address",
+                "body": "While I give you these assurances...",
+                "authorId": 1 
+            }
+        }
+    }
+}

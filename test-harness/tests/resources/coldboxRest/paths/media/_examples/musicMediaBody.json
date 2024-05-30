@@ -1,0 +1,9 @@
+{
+    "summary": "MusicMediaBody",
+    "description": "An example music media",
+    "value": {
+        "title": "Music Title",
+        "type": "music",
+        "artist": "Music Artist"
+    }
+}

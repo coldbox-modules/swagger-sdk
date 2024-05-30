@@ -1,0 +1,10 @@
+{
+    "data": {
+        "id": "1",
+        "title": "The Great Gatsby",
+        "type": "book",
+        "isbn": "1234567"
+    },
+    "messages": [],
+    "error": false
+}

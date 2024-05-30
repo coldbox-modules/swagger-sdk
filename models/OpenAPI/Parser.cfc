@@ -93,16 +93,9 @@ component name="OpenAPIParser" accessors="true" {
 	* @param [XPath]	The XPath to zoom the parsed document to during recursion
 	**/
 	public function parse( required struct APIDoc, required string XPath="" ){
-
 		setDocumentObject( getWirebox().getInstance( "OpenAPIDocument@SwaggerSDK" ).init( arguments.APIDoc, arguments.XPath) );
 
-		var Document = getDocumentObject().getDocument();
-
-		for( var key in Document ){
-			if( isSimpleValue( key ) ){
-				Document[ key ] = parseDocumentReferences( Document[ key ] );
-			}
-		}
+		parseDocumentInheritance( parseDocumentReferences( getDocumentObject().getDocument() ) );
 
 		return this;
 	}
@@ -138,18 +131,38 @@ component name="OpenAPIParser" accessors="true" {
 				DocItem[ i ] = parseDocumentReferences( DocItem[ i ] );
 			}
 		} else if( isStruct( DocItem ) ) {
-			//handle top-level values, if they exist
-			if( structKeyExists( DocItem, "$ref" ) ) return fetchDocumentReference(DocItem[ "$ref" ]);
+
+            //handle top-level values, if they exist
+			if( structKeyExists( DocItem, "$ref" ) ) {
+                // special handling for double pound signs
+                if( left( DocItem[ "$ref" ], 2 ) == chr( 35 ) & chr( 35 ) ) {
+                    DocItem[ "$ref" ] = right( DocItem[ "$ref" ], ( len( DocItem[ "$ref" ] ) - 1 ) );
+                    return DocItem;
+                }
+                return fetchDocumentReference( DocItem[ "$ref" ] );
+            }
 
 			for( var key in DocItem){
 
-				if(
-					isStruct( DocItem[ key ] )
-					&&
+				if( isNull( docItem[ key ] ) ){
+					DocItem[ key ] = nullValue();
+					continue;
+				}
+
+                // If `DocItem[ key ]` is an instance of Parser, we need to flattin it to a CFML struct
+				if (
+					isStruct( DocItem[ key ] ) &&
+					findNoCase( "Parser", getMetaData( DocItem[ key ] ).name )
+				) {
+					DocItem[ key ] = DocItem[ key ].getNormalizedDocument();
+				}
+
+                if (
+					isStruct( DocItem[ key ] ) &&
 					structKeyExists( DocItem[ key ], "$ref" )
 				) {
 
-					DocItem[ key ] = fetchDocumentReference( DocItem[ key ][ "$ref" ] );
+					DocItem[ key ] = parseDocumentReferences( fetchDocumentReference( DocItem[ key ][ "$ref" ] ) );
 
 				} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
 
@@ -164,8 +177,84 @@ component name="OpenAPIParser" accessors="true" {
 
 	}
 
+
+    /**
+	* Parses API Document $extend notations recursively
+	*
+	* @param APIDoc		The struct representation of the API Document
+	* @param [XPath]	The XPath to zoom the parsed document to during recursion
+	**/
+	public function parseDocumentInheritance( required any DocItem ){
+
+        // If `DocItem` is an instance of Parser, we need to flattin it to a CFML struct
+        if (
+            isStruct( DocItem ) &&
+            findNoCase( "Parser", getMetaData( DocItem ).name )
+        ) {
+            DocItem = DocItem.getNormalizedDocument();
+        }
+
+        if( isArray( DocItem ) ) {
+            for( var i = 1; i <= arrayLen( DocItem ); i++){
+				DocItem[ i ] = parseDocumentInheritance( DocItem[ i ] );
+			}
+        } else if( isStruct( DocItem ) ) {
+
+            // handle top-level extension
+            if( structKeyExists( DocItem, "$extend" ) ) {
+                return extendObject( parseDocumentInheritance( DocItem[ "$extend" ] ) );
+            }
+
+            for( var key in DocItem ){
+
+				if( isNull( docItem[ key ] ) ){
+					DocItem[ key ] = nullValue();
+					continue;
+				}
+                if( isStruct( DocItem[ key ] ) || isArray( DocItem[ key ] ) ){
+                    DocItem[ key ] = parseDocumentInheritance( DocItem[ key ] );
+                }
+
+            }
+
+		}
+
+		return DocItem;
+
+	}
+
+
+    /**
+     * Extends schema definitions based on the passed array of schema objects
+     * Note: Ignores CFML objects (non-structs) because sometimes the parser gets passed in here for some reason
+     *
+     * @objects
+     */
+    function extendObject( array objects ) {
+
+        var output = {};
+        objects.each( function( item, index ) {
+            if ( isStruct( item ) ) {
+                item.each( function( key, value ) {
+
+                    if (
+                        output.keyExists( key ) &&
+                        isStruct( output[ key ] )
+                    ) {
+                        output[ key ].append( value, true );
+                    } else {
+                        output[ key ] = value
+                    }
+
+                } );
+            }
+        } );
+
+        return output;
+    }
+
 	/**
-	* Retrieves the value from a nested struc when given an XPath argument
+	* Retrieves the value from a nested struct when given an XPath argument
 	*
 	* @param XPath	The XPath to zoom the parsed document to during recursion
 	**/
@@ -187,16 +276,21 @@ component name="OpenAPIParser" accessors="true" {
 	**/
 	private function fetchDocumentReference( required string $ref ){
 
+        // double pound ## means we want to preserve the swagger $ref pointer (just remove the extra #)
+        if( left( $ref, 2 ) == chr( 35 ) & chr( 35 ) ){
+            return  { "$ref": right( $ref, ( len( $ref ) - 1 ) ) };
 		//resolve internal refrences before looking for externals
-		if( left( $ref, 1 ) == chr( 35 )){
+        } else if( left( $ref, 1 ) == chr( 35 )){
 			var FilePath = "";
-			var XPath = listLast( " " & $ref, chr( 35 ) );
-
+			var XPath = right( $ref, len( $ref ) - 1 );
 		} else {
 			var refArray = listToArray( $ref, chr( 35 ) );
 			var FilePath = refArray[ 1 ];
 			if( arrayLen( refArray ) > 1 ) {
 				var XPath = refArray[ 2 ];
+				if( left( XPath, 1 ) == '/' ){
+					XPath = right( XPath, len( XPath ) - 1 );
+				}
 			}
 		}
 
@@ -207,15 +301,15 @@ component name="OpenAPIParser" accessors="true" {
 			//Files receive a parser reference
 			if( left( FilePath, 4 ) == 'http'  ){
 
-				var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  $ref );
+				ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  $ref );
 
 			} else if( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )){
 
-				var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
+                ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
 
 			} else if( len( FilePath ) && fileExists( expandPath( FilePath ) ) ) {
 
-				var ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
+				ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
 
 			} else if( len( FilePath ) && !fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )) {
 
@@ -223,7 +317,7 @@ component name="OpenAPIParser" accessors="true" {
 
 			} else if( !isNull( XPath )  && len( XPath ) ) {
 
-				var ReferenceDocument = getInternalXPath( XPath );
+				ReferenceDocument = getInternalXPath( XPath );
 
 			} else {
 
@@ -233,14 +327,19 @@ component name="OpenAPIParser" accessors="true" {
 
 		} catch( any e ){
 
-			throw(
+            // if this is a known exception or occured via recursion, rethrow the exception so the user knows which JSON file triggered it
+			if ( listFindNoCase( "SwaggerSDK.ParserException,CBSwagger.InvalidReferenceDocumentException", e.type ) ) {
+                rethrow;
+            }
+
+            throw(
 				type="CBSwagger.InvalidReferenceDocumentException",
-				message="The $ref file pointer of #$ref# could not be loaded and parsed as a valid object.  If your $ref file content is an array, please nest the array within an object as a named key."
+				message="The $ref file pointer of #$ref# could not be loaded and parsed as a valid object.  If your $ref file content is an array, please nest the array within an object as a named key. The message received was: #e.message# #e.detail#"
 			);
 
 		}
 
-		return ReferenceDocument;
+        return ReferenceDocument;
 	}
 
 	/**

@@ -2,15 +2,14 @@
 * My BDD Test
 */
 component extends="BaseOpenAPISpec"{
-	
-	
+
+
 /*********************************** BDD SUITES ***********************************/
 
 	function run(){
 		// all your suites go here.
 		describe( "Performs and tests general OpenAPIParser operations" ,function(){
 
-			
 			beforeEach(function( currentSpec ){
 				setup();
 			});
@@ -20,7 +19,7 @@ component extends="BaseOpenAPISpec"{
 				runParserTypeChecks( JSONParser );
 
 				describe( "Performs recursion checks on parsed JSON document", function(){
-					runParserRecursionTests( JSONParser, true );			
+					runParserRecursionTests( JSONParser, true );
 				});
 
 				describe( "Performs cross-conversion tests on the the parsed JSON document",function(){
@@ -34,21 +33,18 @@ component extends="BaseOpenAPISpec"{
 				runParserTypeChecks( YAMLParser );
 
 				describe( "Performs recursion checks on parsed YAML document", function(){
-					runParserRecursionTests( YAMLParser );			
+					runParserRecursionTests( YAMLParser );
 				});
 
 			});
 
-			xit( "Tests the ability instantiate the parser using a CFML file", function(){
-				
-			});
 		});
 	}
 
 	function runParserTypeChecks( required Parser ){
 
 		// Note: We can't the type tests because ACF and Lucee don't read the metadata the same way
-		//expect( ARGUMENTS.Parser ).toBeInstanceOf( "SwaggerSDK.models.OpenAPI.Parser" );
+		expect( ARGUMENTS.Parser ).toBeInstanceOf( "Parser" );
 		expect( ARGUMENTS.Parser ).toHaveKey( "getDocumentObject" );
 		//expect( ARGUMENTS.Parser.getDocumentObject() ).toBeInstanceOf( "SwaggerSDK.models.OpenAPI.Document" );
 		expect( ARGUMENTS.Parser ).toHaveKey( "getSchemaType" );
@@ -62,22 +58,19 @@ component extends="BaseOpenAPISpec"{
 	function runParserRecursionTests( required Parser, required boolean testObjects=false ){
 		if( ARGUMENTS.testObjects ){
 
-			it( "Tests for the recursive presence of OpenAPIDocument objects within Parser #Parser.getSchemaType()# document object" , function(){
+			it( "Tests for the recursive presence of structs within Parser #Parser.getSchemaType()# document object" , function(){
 				var ParserDoc = Parser.getDocumentObject();
 				expect( ParserDoc ).toBeInstanceOf( "Document" );
 				expect( ParserDoc ).toHaveKey( "getDocument" );
 				var APIDoc = ParserDoc.getDocument();
 				expect( APIDoc ).toBeStruct();
 				expect( APIDoc ).toHaveKey( "paths" );
+				expect( APIDoc.paths ).toBeStruct();
 				expect( APIDoc.paths ).toHaveKey( "/pets" );
-				
-				expect( APIDoc.paths[ "/pets" ] ).toBeInstanceOf( "Parser" );
-				runParserTypeChecks( APIDoc.paths[ "/pets" ] );
-
 			});
-				
+
 		}
-		
+
 		it( "Tests the ability to fully normalize the parsed #Parser.getSchemaType()# document" ,function(  ){
 			var NormalizedDocument = Parser.getNormalizedDocument();
 
@@ -85,9 +78,10 @@ component extends="BaseOpenAPISpec"{
 			expect( NormalizedDocument ).toHaveKey( "openapi" );
 			expect( NormalizedDocument ).toHaveKey( "servers" );
 			expect( NormalizedDocument ).toHaveKey( "info" );
+
 			if(Parser.getSchemaType() eq "YAML")
 				expect( NormalizedDocument ).toHaveKey( "components" );
-				
+
 			expect( NormalizedDocument ).toHaveKey( "paths" );
 
 			expect( NormalizedDocument ).toHaveDeepKey( "/pets" );
@@ -96,14 +90,15 @@ component extends="BaseOpenAPISpec"{
 			expect( NormalizedDocument.paths[ '/pets' ] ).toHaveDeepKey( "parameters" );
 			expect( NormalizedDocument.paths[ '/pets' ] ).toHaveDeepKey( "responses" );
 
-			expect( NormalizedDocument ).toHaveDeepKey( "/pets/{petId}" );
-			expect( NormalizedDocument.paths[ '/pets/{petId}' ] ).toBeStruct();
-			expect( NormalizedDocument.paths[ '/pets/{petId}' ] ).toHaveDeepKey( "description" );
-			expect( NormalizedDocument.paths[ '/pets/{petId}' ] ).toHaveDeepKey( "parameters" );
-			expect( NormalizedDocument.paths[ '/pets/{petId}' ] ).toHaveDeepKey( "responses" );
+			expect( NormalizedDocument ).toHaveDeepKey( "/pet/{petId}" );
+			expect( NormalizedDocument.paths[ '/pet/{petId}' ] ).toBeStruct();
+			expect( NormalizedDocument.paths[ '/pet/{petId}' ] ).toHaveDeepKey( "description" );
+			expect( NormalizedDocument.paths[ '/pet/{petId}' ] ).toHaveDeepKey( "parameters" );
+			expect( NormalizedDocument.paths[ '/pet/{petId}' ] ).toHaveDeepKey( "responses" );
 
 			expect( arrayLen( structFindKey( NormalizedDocument, "$ref" ) ) ).toBe( 0 );
-			
+            expect( arrayLen( structFindKey( NormalizedDocument, "$extend" ) ) ).toBe( 0 );
+
 		});
 
 	}
@@ -113,5 +108,5 @@ component extends="BaseOpenAPISpec"{
 
 		});
 	}
-	
+
 }
