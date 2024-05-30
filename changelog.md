@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * [cbSwagger #35](https://github.com/coldbox-modules/cbSwagger/issues/35) Fixed an issue where inheritance `$ref` pointers on a Zoomed document could not be found
+* Added handling to for `null` values in parsed `$ref` JSON documents
 
 ### Added
 
