@@ -143,22 +143,11 @@ component name="OpenAPIParser" accessors="true" {
             }
 
 			for( var key in DocItem){
-
 				if( isNull( docItem[ key ] ) ){
-					DocItem[ key ] = nullValue();
 					continue;
-				}
-
-                // If `DocItem[ key ]` is an instance of Parser, we need to flattin it to a CFML struct
-				if (
-					isStruct( DocItem[ key ] ) &&
-					findNoCase( "Parser", getMetaData( DocItem[ key ] ).name )
-				) {
-					DocItem[ key ] = DocItem[ key ].getNormalizedDocument();
-				}
-
-                if (
-					isStruct( DocItem[ key ] ) &&
+				} else if (
+					isStruct( DocItem[ key ] )
+					&&
 					structKeyExists( DocItem[ key ], "$ref" )
 				) {
 
@@ -198,22 +187,32 @@ component name="OpenAPIParser" accessors="true" {
             for( var i = 1; i <= arrayLen( DocItem ); i++){
 				DocItem[ i ] = parseDocumentInheritance( DocItem[ i ] );
 			}
-        } else if( isStruct( DocItem ) ) {
+		} else if( isStruct( DocItem ) ) {
 
-            // handle top-level extension
-            if( structKeyExists( DocItem, "$extend" ) ) {
-                return extendObject( parseDocumentInheritance( DocItem[ "$extend" ] ) );
-            }
+			var compositionKeys = [ "$allOf", "$oneOf" ];
 
-            for( var key in DocItem ){
+			for( var composition in compositionKeys ){
 
-				if( isNull( docItem[ key ] ) ){
-					DocItem[ key ] = nullValue();
-					continue;
+				// handle top-level extension
+				if(
+					structKeyExists( DocItem, composition ) &&
+					isArray( DocItem[ composition ] )
+				) {
+					return extendObject( DocItem[ composition ] );
 				}
-                if( isStruct( DocItem[ key ] ) || isArray( DocItem[ key ] ) ){
-                    DocItem[ key ] = parseDocumentInheritance( DocItem[ key ] );
-                }
+
+				for( var key in DocItem){
+					if( isNull( docItem[ key ] ) ){
+						continue;
+					} else if (
+						isStruct( DocItem[ key ] ) &&
+						structKeyExists( DocItem[ key ], composition ) &&
+						isArray( DocItem[ key ][ composition ] )
+					) {
+						DocItem[ key ] = parseDocumentReferences( extendObject( DocItem[ key ][ composition ] ) );
+					} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
+						DocItem[ key ] = parseDocumentInheritance( parseDocumentReferences( DocItem[ key ] ) );
+					}
 
             }
 
@@ -235,6 +234,12 @@ component name="OpenAPIParser" accessors="true" {
         var output = {};
         objects.each( function( item, index ) {
             if ( isStruct( item ) ) {
+
+				// If `item` is an instance of Parser, we need to flattin it to a CFML struct
+                if ( findNoCase( "Parser", getMetaData( item ).name ) ) {
+                    item = item.getNormalizedDocument();
+                }
+
                 item.each( function( key, value ) {
 
                     if (
@@ -320,11 +325,10 @@ component name="OpenAPIParser" accessors="true" {
 				ReferenceDocument = getInternalXPath( XPath );
 
 			} else {
-
 				throw( type="SwaggerSDK.ParserException", message="The $ref #$ref# could not be resolved as either an internal or external reference");
-
 			}
-
+		} catch( SwaggerSDK.ParserException e ){
+			rethrow;
 		} catch( any e ){
 
             // if this is a known exception or occured via recursion, rethrow the exception so the user knows which JSON file triggered it
