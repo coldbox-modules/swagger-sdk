@@ -1,0 +1,19 @@
+{
+    "name":"swagger-sdk-lucee@6",
+    "app":{
+        "serverHomeDirectory":".engine/lucee5",
+        "cfengine":"lucee@6"
+    },
+    "web":{
+        "http":{
+            "port":"60299"
+        },
+        "rewrites":{
+            "enable":"true"
+        },
+        "aliases":{
+            "/moduleroot/swagger-sdk":"../"
+        }
+    },
+    "openBrowser":"false"
+}
