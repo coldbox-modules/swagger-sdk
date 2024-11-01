@@ -32,7 +32,7 @@ jobs:
           java-version: "11"
 
       - name: Cache CommandBox Dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         if: ${{ true }}
         with:
           path: ~/.CommandBox/artifacts
@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload Test Results Artifacts
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.cfengine }}
           path: |
@@ -101,7 +101,7 @@ jobs:
 
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Failure Debugging Info - ${{ matrix.cfengine }}
           path: |
@@ -128,7 +128,7 @@ jobs:
           java-version: "11"
 
       - name: Cache CommandBox Dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         if: ${{ true }}
         with:
           path: ~/.CommandBox/artifacts
@@ -161,7 +161,7 @@ jobs:
 
       - name: Upload Build Artifacts
         if: success()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.MODULE_ID }}
           path: |
