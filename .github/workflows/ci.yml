@@ -17,10 +17,15 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-20.04
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
         cfengine: [ "lucee@5", "lucee@6", "adobe@2018", "adobe@2021" ]
+        experimental: [ false ]
+        include:
+          - cfengine: "boxlang@1"
+            experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -42,6 +47,11 @@ jobs:
 
       - name: Setup CommandBox
         uses: elpete/setup-commandbox@v1.0.0
+
+      - name: Update Commandbox Boxlang Module
+        if: ${{ matrix.cfengine == 'boxlang@1' }}
+        run:
+          box install --force commandbox-boxlang
 
       - name: Install Test Harness Dependencies
         working-directory: ./test-harness
