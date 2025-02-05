@@ -13,7 +13,7 @@ on:
 jobs:
   tests:
     name: Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       DB_USER: root
       DB_PASSWORD: root
@@ -67,7 +67,7 @@ jobs:
           box testbox run --verbose outputFile=tests/results/test-results outputFormats=json,antjunit
 
       - name: Publish PR Test Reports
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: test-harness/tests/results/**/*.xml
@@ -81,7 +81,7 @@ jobs:
 
   format:
     name: Format
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
