@@ -5,6 +5,7 @@
 * Open API Parser
 */
 component name="OpenAPIParser" accessors="true" {
+
 	//the base path of the APIDoc
 	property name="DocumentObject";
 	property name="baseDocumentPath";
@@ -178,6 +179,7 @@ component name="OpenAPIParser" accessors="true" {
         // If `DocItem` is an instance of Parser, we need to flattin it to a CFML struct
         if (
             isStruct( DocItem ) &&
+			structKeyExists( getMetaData( DocItem ), "name" ) &&
             findNoCase( "Parser", getMetaData( DocItem ).name )
         ) {
             DocItem = DocItem.getNormalizedDocument();
@@ -213,6 +215,7 @@ component name="OpenAPIParser" accessors="true" {
 					} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
 						DocItem[ key ] = parseDocumentInheritance( parseDocumentReferences( DocItem[ key ] ) );
 					}
+				}
 
             }
 
@@ -302,23 +305,24 @@ component name="OpenAPIParser" accessors="true" {
 		var ReferenceDocument = {};
 
 		try{
+			var basePath = isNull( getBaseDocumentPath() ) ? "/" : getDirectoryFromPath( getBaseDocumentPath() );
 
 			//Files receive a parser reference
 			if( left( FilePath, 4 ) == 'http'  ){
 
 				ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  $ref );
 
-			} else if( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )){
+			} else if( len( FilePath ) && fileExists( basePath & FilePath )){
 
-                ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
+                ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init( basePath & $ref );
 
 			} else if( len( FilePath ) && fileExists( expandPath( FilePath ) ) ) {
 
-				ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
+				ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init( expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
 
-			} else if( len( FilePath ) && !fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )) {
+			} else if( len( FilePath ) && !fileExists( basePath & FilePath )) {
 
-				throw( type="SwaggerSDK.ParserException", message="File #( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )# does not exist" );
+				throw( type="SwaggerSDK.ParserException", message="File #( basePath & FilePath )# does not exist" );
 
 			} else if( !isNull( XPath )  && len( XPath ) ) {
 
