@@ -176,7 +176,7 @@ component name="OpenAPIParser" accessors="true" {
 	**/
 	public function parseDocumentInheritance( required any DocItem ){
 
-        // If `DocItem` is an instance of Parser, we need to flattin it to a CFML struct
+        // If `DocItem` is an instance of Parser, we need to flatten it to a CFML struct
         if (
             isStruct( DocItem ) &&
 			structKeyExists( getMetaData( DocItem ), "name" ) &&
@@ -191,7 +191,7 @@ component name="OpenAPIParser" accessors="true" {
 			}
 		} else if( isStruct( DocItem ) ) {
 
-			var compositionKeys = [ "$allOf", "$oneOf" ];
+			var compositionKeys = [ "$allOf", "$oneOf", "$extend" ];
 
 			for( var composition in compositionKeys ){
 
@@ -238,7 +238,7 @@ component name="OpenAPIParser" accessors="true" {
         objects.each( function( item, index ) {
             if ( isStruct( item ) ) {
 
-				// If `item` is an instance of Parser, we need to flattin it to a CFML struct
+				// If `item` is an instance of Parser, we need to flatten it to a CFML struct
                 if ( findNoCase( "Parser", getMetaData( item ).name ) ) {
                     item = item.getNormalizedDocument();
                 }
