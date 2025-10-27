@@ -5,7 +5,6 @@
 * Open API Parser
 */
 component name="OpenAPIParser" accessors="true" {
-
 	//the base path of the APIDoc
 	property name="DocumentObject";
 	property name="baseDocumentPath";
@@ -144,11 +143,22 @@ component name="OpenAPIParser" accessors="true" {
             }
 
 			for( var key in DocItem){
+
 				if( isNull( docItem[ key ] ) ){
+					DocItem[ key ] = nullValue();
 					continue;
-				} else if (
-					isStruct( DocItem[ key ] )
-					&&
+				}
+
+                // If `DocItem[ key ]` is an instance of Parser, we need to flattin it to a CFML struct
+				if (
+					isStruct( DocItem[ key ] ) &&
+					findNoCase( "Parser", getMetaData( DocItem[ key ] ).name )
+				) {
+					DocItem[ key ] = DocItem[ key ].getNormalizedDocument();
+				}
+
+                if (
+					isStruct( DocItem[ key ] ) &&
 					structKeyExists( DocItem[ key ], "$ref" )
 				) {
 
@@ -176,10 +186,9 @@ component name="OpenAPIParser" accessors="true" {
 	**/
 	public function parseDocumentInheritance( required any DocItem ){
 
-        // If `DocItem` is an instance of Parser, we need to flatten it to a CFML struct
+        // If `DocItem` is an instance of Parser, we need to flattin it to a CFML struct
         if (
             isStruct( DocItem ) &&
-			structKeyExists( getMetaData( DocItem ), "name" ) &&
             findNoCase( "Parser", getMetaData( DocItem ).name )
         ) {
             DocItem = DocItem.getNormalizedDocument();
@@ -189,33 +198,22 @@ component name="OpenAPIParser" accessors="true" {
             for( var i = 1; i <= arrayLen( DocItem ); i++){
 				DocItem[ i ] = parseDocumentInheritance( DocItem[ i ] );
 			}
-		} else if( isStruct( DocItem ) ) {
+        } else if( isStruct( DocItem ) ) {
 
-			var compositionKeys = [ "$allOf", "$oneOf", "$extend" ];
+            // handle top-level extension
+            if( structKeyExists( DocItem, "$extend" ) ) {
+                return extendObject( parseDocumentInheritance( DocItem[ "$extend" ] ) );
+            }
 
-			for( var composition in compositionKeys ){
+            for( var key in DocItem ){
 
-				// handle top-level extension
-				if(
-					structKeyExists( DocItem, composition ) &&
-					isArray( DocItem[ composition ] )
-				) {
-					return extendObject( DocItem[ composition ] );
+				if( isNull( docItem[ key ] ) ){
+					DocItem[ key ] = nullValue();
+					continue;
 				}
-
-				for( var key in DocItem){
-					if( isNull( docItem[ key ] ) ){
-						continue;
-					} else if (
-						isStruct( DocItem[ key ] ) &&
-						structKeyExists( DocItem[ key ], composition ) &&
-						isArray( DocItem[ key ][ composition ] )
-					) {
-						DocItem[ key ] = parseDocumentReferences( extendObject( DocItem[ key ][ composition ] ) );
-					} else if( isStruct( DocItem[ key ] ) ||  isArray( DocItem[ key ] ) ){
-						DocItem[ key ] = parseDocumentInheritance( parseDocumentReferences( DocItem[ key ] ) );
-					}
-				}
+                if( isStruct( DocItem[ key ] ) || isArray( DocItem[ key ] ) ){
+                    DocItem[ key ] = parseDocumentInheritance( DocItem[ key ] );
+                }
 
             }
 
@@ -237,12 +235,6 @@ component name="OpenAPIParser" accessors="true" {
         var output = {};
         objects.each( function( item, index ) {
             if ( isStruct( item ) ) {
-
-				// If `item` is an instance of Parser, we need to flatten it to a CFML struct
-                if ( findNoCase( "Parser", getMetaData( item ).name ) ) {
-                    item = item.getNormalizedDocument();
-                }
-
                 item.each( function( key, value ) {
 
                     if (
@@ -305,34 +297,34 @@ component name="OpenAPIParser" accessors="true" {
 		var ReferenceDocument = {};
 
 		try{
-			var basePath = isNull( getBaseDocumentPath() ) ? "/" : getDirectoryFromPath( getBaseDocumentPath() );
 
 			//Files receive a parser reference
 			if( left( FilePath, 4 ) == 'http'  ){
 
 				ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  $ref );
 
-			} else if( len( FilePath ) && fileExists( basePath & FilePath )){
+			} else if( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )){
 
-                ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init( basePath & $ref );
+                ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
 
 			} else if( len( FilePath ) && fileExists( expandPath( FilePath ) ) ) {
 
-				ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init( expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
+				ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init(  expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
 
-			} else if( len( FilePath ) && !fileExists( basePath & FilePath )) {
+			} else if( len( FilePath ) && !fileExists( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )) {
 
-				throw( type="SwaggerSDK.ParserException", message="File #( basePath & FilePath )# does not exist" );
+				throw( type="SwaggerSDK.ParserException", message="File #( getDirectoryFromPath( getBaseDocumentPath() ) &  FilePath )# does not exist" );
 
 			} else if( !isNull( XPath )  && len( XPath ) ) {
 
 				ReferenceDocument = getInternalXPath( XPath );
 
 			} else {
+
 				throw( type="SwaggerSDK.ParserException", message="The $ref #$ref# could not be resolved as either an internal or external reference");
+
 			}
-		} catch( SwaggerSDK.ParserException e ){
-			rethrow;
+
 		} catch( any e ){
 
             // if this is a known exception or occured via recursion, rethrow the exception so the user knows which JSON file triggered it
