@@ -1,8 +1,8 @@
 {
-    "name":"swagger-sdk-lucee@5",
+    "name":"swagger-sdk-adobe@2018",
     "app":{
-        "serverHomeDirectory":".engine/lucee5",
-        "cfengine":"lucee@5"
+        "serverHomeDirectory":".engine/adobe2018",
+        "cfengine":"adobe@2018"
     },
     "web":{
         "http":{
@@ -11,7 +11,8 @@
         "rewrites":{
             "enable":"true"
         },
-        "aliases":{
+		"webroot":"test-harness",
+		"aliases":{
             "/moduleroot/swagger-sdk":"../"
         }
     },

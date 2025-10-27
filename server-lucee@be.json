@@ -1,19 +1,20 @@
 {
-    "name":"swagger-sdk-adobe@2021",
+    "name":"swagger-sdk-lucee@be",
     "app":{
-        "serverHomeDirectory":".engine/adobe2021",
-        "cfengine":"adobe@2021"
+        "serverHomeDirectory":".engine/luceeBE",
+        "cfengine":"lucee@6"
     },
     "web":{
         "http":{
             "port":"60299"
         },
         "rewrites":{
-            "enable":true
+            "enable":"true"
         },
+		"webroot":"test-harness",
         "aliases":{
             "/moduleroot/swagger-sdk":"../"
         }
     },
-    "openBrowser":true
+    "openBrowser":"false"
 }

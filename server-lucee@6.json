@@ -1,7 +1,7 @@
 {
     "name":"swagger-sdk-lucee@6",
     "app":{
-        "serverHomeDirectory":".engine/lucee5",
+        "serverHomeDirectory":".engine/lucee6",
         "cfengine":"lucee@6"
     },
     "web":{
@@ -11,6 +11,7 @@
         "rewrites":{
             "enable":"true"
         },
+		"webroot":"test-harness",
         "aliases":{
             "/moduleroot/swagger-sdk":"../"
         }
