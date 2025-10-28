@@ -22,8 +22,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "lucee@5", "lucee@6" ,"adobe@2018", "adobe@2021", "adobe@2023", "adobe@2025", "boxlang-cfml@1" ]
-        coldboxVersion: [ "^6.0.0", "^7.0.0", "^8.0.0" ]
+        cfengine: [ "lucee@5", "lucee@6", "adobe@2021", "adobe@2023", "adobe@2025", "boxlang-cfml@1" ]
+        coldboxVersion: [ "^7.0.0", "^8.0.0" ]
         experimental: [ false ]
         include:
           - coldboxVersion: "^8.0.0"
@@ -37,9 +37,6 @@ jobs:
             experimental: true
           - coldboxVersion: "be"
             cfengine: "lucee@be"
-            experimental: true
-          - coldboxVersion: "be"
-            cfengine: "adobe@2018"
             experimental: true
           - coldboxVersion: "be"
             cfengine: "adobe@2021"
@@ -190,7 +187,7 @@ jobs:
         run: |
           echo "VERSION=`cat box.json | jq '.version' -r`" >> $GITHUB_ENV
           box package set version=@build.version@+@build.number@
-          # master or snapshot
+          # master or snapshotgit
           echo "Github Ref is $GITHUB_REF"
           echo "BRANCH=master" >> $GITHUB_ENV
           if [ $GITHUB_REF == 'refs/heads/development' ]
