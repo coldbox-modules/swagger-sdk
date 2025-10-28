@@ -1,7 +1,7 @@
 /**
 * My BDD Test
 */
-component extends="BaseOpenAPISpec"{
+component extends="tests.resources.BaseOpenAPISpec"{
 
     public function beforeAll(){
         super.beforeAll();
@@ -61,17 +61,17 @@ component extends="BaseOpenAPISpec"{
                 expect( apiDoc.components.schemas ).toHaveKey( "User" );
                 expect( apiDoc.components.schemas ).toHaveKey( "Post" );
                 expect( apiDoc.components.schemas ).toHaveKey( "Media" );
-                
+
                 // schema inherited objects via `allOf`
                 var childObjects = [ "BookMedia", "MusicMedia" ];
 
                 for ( var item in ChildObjects ) {
                     expect( apiDoc.components.schemas ).toHaveKey( item );
                     expect( apiDoc.components.schemas[ item ] ).toHaveKey( "allOf" );
-                    expect( apiDoc.components.schemas[ item ].allOf ).toBeArray(); 
-                    expect( apiDoc.components.schemas[ item ].allOf[ 1 ] ).toBeStruct(); 
+                    expect( apiDoc.components.schemas[ item ].allOf ).toBeArray();
+                    expect( apiDoc.components.schemas[ item ].allOf[ 1 ] ).toBeStruct();
                     expect( apiDoc.components.schemas[ item ].allOf[ 1 ] ).toHaveKey( "$ref" );
-                    expect( apiDoc.components.schemas[ item ].allOf[ 1 ][ "$ref" ] ).toBe( "##/components/schemas/Media" ); 
+                    expect( apiDoc.components.schemas[ item ].allOf[ 1 ][ "$ref" ] ).toBe( "##/components/schemas/Media" );
                 }
 
                 // users.index intentionally doesn't use components/schema. Check for existence of $ref object

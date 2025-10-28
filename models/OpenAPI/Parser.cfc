@@ -50,13 +50,15 @@ component name="OpenAPIParser" accessors="true" {
 
 			case "yaml":
 			case "yml":
+				if ( server.keyExists( "boxlang" ) ) {
+					documentContent = yamlDeserialize( fileRead( DocPath ) );
+				} else {
+					var YAMLLoader = jLoader.create( "org.yaml.snakeyaml.Yaml" );
+					var IOFile = jLoader.create( "java.io.File" ).init( DocPath );
+					var InputStream = jLoader.create( "java.io.FileInputStream" ).init( IOFile );
 
-				var YAMLLoader = jLoader.create( "org.yaml.snakeyaml.Yaml" );
-				var IOFile = jLoader.create( "java.io.File" ).init( DocPath );
-				var InputStream = jLoader.create( "java.io.FileInputStream" ).init( IOFile );
-
-				documentContent = getUtils().toCF( YAMLLoader.load( InputStream ) );
-
+					documentContent = getUtils().toCF( YAMLLoader.load( InputStream ) );
+				}
 				break;
 
 			case "json":

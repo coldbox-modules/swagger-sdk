@@ -50,4 +50,8 @@ component extends="coldbox.system.testing.BaseTestCase" appmapping="/root" {
 		super.afterAll();
 	}
 
+	function run() {
+		throw( "Must be implemented in a concrete spec" );
+	}
+
 }

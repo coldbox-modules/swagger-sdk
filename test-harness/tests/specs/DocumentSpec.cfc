@@ -1,7 +1,7 @@
 /**
 * My BDD Test
 */
-component extends="BaseOpenAPISpec"{
+component extends="tests.resources.BaseOpenAPISpec"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 

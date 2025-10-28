@@ -71,9 +71,9 @@ component name="OpenAPIDocument" accessors="true" {
 	 * Convenience method to return a YAML string of the normalized document
 	 **/
 	function asYAML(){
-		return variables.jLoader
-			.create( "org.yaml.snakeyaml.Yaml" )
-			.dump( getNormalizedDocument() );
+		return server.keyExists( "boxlang" ) ?
+			yamlSerialize( getNormalizedDocument() ) :
+			variables.jLoader.create( "org.yaml.snakeyaml.Yaml" ).dump( getNormalizedDocument() );
 	}
 
 	/**

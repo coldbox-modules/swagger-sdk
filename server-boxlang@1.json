@@ -23,6 +23,6 @@
         "javaVersion":"openjdk21_jdk_x64"
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-esapi,bx-unsafe-evaluate --noSave"
+        "onServerInitialInstall":"install bx-esapi,bx-unsafe-evaluate,bx-yaml --noSave"
     }
 }
