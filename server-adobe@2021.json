@@ -11,9 +11,17 @@
         "rewrites":{
             "enable":true
         },
+		"webroot":"test-harness",
         "aliases":{
             "/moduleroot/swagger-sdk":"../"
         }
     },
-    "openBrowser":true
+	"jvm":{
+        "heapSize":"1024",
+        "javaVersion":"openjdk11_jre"
+    },
+    "openBrowser":true,
+	"scripts" : {
+		"onServerInstall" : "cfpm install zip"
+	}
 }

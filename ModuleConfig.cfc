@@ -6,21 +6,21 @@
 component {
 
 	// Module Properties
-	this.title = "ColdBox Swagger SDK";
-	this.author = "Ortus Solutions";
-	this.webURL = "https://www.ortussolutions.com";
-	this.description = "Swagger SDK Module";
-	this.version = "@build.version@+@build.number@";
-	this.viewParentLookup = true;
+	this.title              = "ColdBox Swagger SDK";
+	this.author             = "Ortus Solutions";
+	this.webURL             = "https://www.ortussolutions.com";
+	this.description        = "Swagger SDK Module";
+	this.version            = "@build.version@+@build.number@";
+	this.viewParentLookup   = true;
 	this.layoutParentLookup = true;
 	// Model Namespace
-	this.modelNamespace = "SwaggerSDK";
+	this.modelNamespace     = "SwaggerSDK";
 	// CF Mapping
-	this.cfmapping = "SwaggerSDK";
+	this.cfmapping          = "SwaggerSDK";
 	// Auto-map models
-	this.autoMapModels = false;
+	this.autoMapModels      = false;
 	// Module Dependencies That Must Be Loaded First, use internal names or aliases
-	this.dependencies = [ "cbjavaloader" ];
+	this.dependencies       = [ "cbjavaloader" ];
 
 	/**
 	 * Configure App
@@ -33,14 +33,13 @@ component {
 	 */
 	function onLoad(){
 		// load jars
-		wirebox.getInstance( "loader@cbjavaloader" )
-			.appendPaths( variables.modulePath & "/lib" );
+		wirebox.getInstance( "loader@cbjavaloader" ).appendPaths( variables.modulePath & "/lib" );
 
 
 		/**
-		* Utilities
-		*
-		*/
+		 * Utilities
+		 *
+		 */
 
 		// Open API Util
 		binder
@@ -51,9 +50,9 @@ component {
 
 
 		/**
-		* Manual Instantiation Instances
-		*
-		*/
+		 * Manual Instantiation Instances
+		 *
+		 */
 
 		// models.OpenAPI.Document
 		binder

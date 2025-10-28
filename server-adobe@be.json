@@ -1,0 +1,27 @@
+{
+    "name":"swagger-sdk-adobe@be",
+    "app":{
+        "serverHomeDirectory":".engine/adobeBE",
+        "cfengine":"adobe@be"
+    },
+    "web":{
+        "http":{
+            "port":"60299"
+        },
+        "rewrites":{
+            "enable":true
+        },
+		"webroot":"test-harness",
+        "aliases":{
+            "/moduleroot/swagger-sdk":"../"
+        }
+    },
+	"jvm":{
+        "heapSize":"1024",
+        "javaVersion":"openjdk21_jre"
+    },
+    "openBrowser":true,
+	"scripts" : {
+		"onServerInstall" : "cfpm install zip"
+	}
+}

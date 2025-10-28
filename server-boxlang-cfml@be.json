@@ -1,9 +1,9 @@
 {
     "app":{
-        "cfengine":"boxlang@^1",
-        "serverHomeDirectory":".engine/boxlang1"
+        "cfengine":"boxlang@be",
+        "serverHomeDirectory":".engine/boxlangCFMLBE"
     },
-    "name":"swagger-sdk-boxlang@1",
+    "name":"swagger-sdk-boxlang-cfml@be",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -23,6 +23,6 @@
         "javaVersion":"openjdk21_jdk_x64"
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-esapi,bx-unsafe-evaluate,bx-yaml --noSave"
+        "onServerInitialInstall":"install bx-compat-cfml@be,bx-esapi,bx-unsafe-evaluate,bx-yaml --noSave"
     }
 }

@@ -2,6 +2,7 @@
 
 .artifacts/**
 .tmp/**
+modules/
 
 test-harness/.engine/**
 test-harness/.env
@@ -11,6 +12,7 @@ test-harness/testbox/**
 test-harness/logs/**
 test-harness/modules/**
 test-harness/tests/resources/petstore/test.yaml
+.engine/**
 
 # log files
 logs/**
