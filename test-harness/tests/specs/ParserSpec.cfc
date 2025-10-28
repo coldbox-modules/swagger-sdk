@@ -1,13 +1,12 @@
 component extends="tests.resources.BaseOpenAPISpec" {
 
-	function run() {
-		describe( "Performs and tests general OpenAPIParser operations", function() {
-
-			beforeEach( function() {
+	function run(){
+		describe( "Performs and tests general OpenAPIParser operations", function(){
+			beforeEach( function(){
 				setup();
 			} );
 
-			it( "Tests the ability instantiate the parser using a JSON file", function() {
+			it( "Tests the ability instantiate the parser using a JSON file", function(){
 				var JSONParser = getInstance( "OpenAPIParser@SwaggerSDK" ).init( VARIABLES.TestJSONFile );
 				runParserTypeChecks( JSONParser );
 				runParserRecursionTests( JSONParser, true );
@@ -21,7 +20,7 @@ component extends="tests.resources.BaseOpenAPISpec" {
 		} );
 	}
 
-	function runParserTypeChecks( required Parser ) {
+	function runParserTypeChecks( required Parser ){
 		// Note: We can"t the type tests because ACF and Lucee don"t read the metadata the same way
 		expect( ARGUMENTS.Parser ).toBeInstanceOf( "Parser" );
 		expect( ARGUMENTS.Parser ).toHaveKey( "getDocumentObject" );
@@ -29,11 +28,13 @@ component extends="tests.resources.BaseOpenAPISpec" {
 		expect( ARGUMENTS.Parser.getSchemaType() ).toBeString();
 		expect( ARGUMENTS.Parser ).toHaveKey( "getBaseDocumentPath" );
 		expect( ARGUMENTS.Parser.getBaseDocumentPath() ).toBeString();
-
 	}
 
 
-	function runParserRecursionTests( required Parser, required boolean testObjects = false ) {
+	function runParserRecursionTests(
+		required Parser,
+		required boolean testObjects = false
+	){
 		if ( arguments.testObjects ) {
 			var ParserDoc = arguments.Parser.getDocumentObject();
 			expect( ParserDoc ).toBeInstanceOf( "Document" );

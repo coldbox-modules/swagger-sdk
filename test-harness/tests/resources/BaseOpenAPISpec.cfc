@@ -5,7 +5,7 @@ component extends="coldbox.system.testing.BaseTestCase" appmapping="/root" {
 	property name="TestJSONFile";
 	property name="TestYAMLFile";
 
-	this.loadColdbox = true;
+	this.loadColdbox   = true;
 	this.unloadColdBox = false;
 
 	public function beforeAll(){
@@ -19,38 +19,24 @@ component extends="coldbox.system.testing.BaseTestCase" appmapping="/root" {
 			"The test JSON API directory does not exist. Could not continue."
 		);
 
-		expect(
-			fileExists(
-				TestJSONAPIDirectory & "/" & listLast( TestJSONAPIDirectory, "/\" ) & ".json"
-			)
-		).toBeTrue(
+		expect( fileExists( TestJSONAPIDirectory & "/" & listLast( TestJSONAPIDirectory, "/\" ) & ".json" ) ).toBeTrue(
 			"A JSON API file named #listLast( TestJSONAPIDirectory, "/\" ) & ".json"# does not exist in the #TestJSONAPIDirectory# directory.  Could not continue."
 		);
 
-		VARIABLES.testJSONFile = TestJSONAPIDirectory & "/" & listLast(
-			TestJSONAPIDirectory,
-			"/\"
-		) & ".json";
+		VARIABLES.testJSONFile = TestJSONAPIDirectory & "/" & listLast( TestJSONAPIDirectory, "/\" ) & ".json";
 
-		expect(
-			fileExists(
-				testYAMLAPIDirectory & "/" & listLast( testYAMLAPIDirectory, "/\" ) & ".yaml"
-			)
-		).toBeTrue(
+		expect( fileExists( testYAMLAPIDirectory & "/" & listLast( testYAMLAPIDirectory, "/\" ) & ".yaml" ) ).toBeTrue(
 			"A YML API file named #listLast( testYAMLAPIDirectory, "/\" ) & ".yaml"# does not exist in the #testYAMLAPIDirectory# directory.  Could not continue."
 		);
 
-		VARIABLES.testYAMLFile = testYAMLAPIDirectory & "/" & listLast(
-			TestYAMLAPIDirectory,
-			"/\"
-		) & ".yaml";
+		VARIABLES.testYAMLFile = testYAMLAPIDirectory & "/" & listLast( TestYAMLAPIDirectory, "/\" ) & ".yaml";
 	}
 
 	public function afterAll(){
 		super.afterAll();
 	}
 
-	function run() {
+	function run(){
 		throw( "Must be implemented in a concrete spec" );
 	}
 
