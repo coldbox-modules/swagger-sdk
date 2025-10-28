@@ -16,5 +16,9 @@
             "/moduleroot/swagger-sdk":"../"
         }
     },
+	"jvm":{
+        "heapSize":"1024",
+        "javaVersion":"openjdk8_jre"
+    },
     "openBrowser":"false"
 }

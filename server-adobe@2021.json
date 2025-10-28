@@ -16,6 +16,10 @@
             "/moduleroot/swagger-sdk":"../"
         }
     },
+	"jvm":{
+        "heapSize":"1024",
+        "javaVersion":"openjdk11_jre"
+    },
     "openBrowser":true,
 	"scripts" : {
 		"onServerInstall" : "cfpm install zip"
