@@ -1,9 +1,9 @@
 /**
-* Copyright Ortus Solutions, Corp, All rights reserved
-* www.ortussolutions.com
-* ---
-* Open API Utilities
-*/
+ * Copyright Ortus Solutions, Corp, All rights reserved
+ * www.ortussolutions.com
+ * ---
+ * Open API Utilities
+ */
 component name="OpenAPIUtil" accessors="true" {
 
 	/**
@@ -18,27 +18,27 @@ component name="OpenAPIUtil" accessors="true" {
 	 */
 	any function newTemplate(){
 		// We need to use Linked Hashmaps to maintain struct order for serialization and deserialization
-		var template = structNew( "ordered" );
-		var templateDefaults  = [
-			{ "openapi"			: "3.0.2" },
+		var template         = structNew( "ordered" );
+		var templateDefaults = [
+			{ "openapi" : "3.0.2" },
 			{
-			  "info"			: {
-			      "version"       	: "",
-			      "title"         	: "",
-			      "description"   	: "",
-			      "termsOfService"	: "",
-			      "license"       	: structNew( "ordered" ),
-			      "contact"       	: structNew( "ordered" )
-			    }
+				"info" : {
+					"version"        : "",
+					"title"          : "",
+					"description"    : "",
+					"termsOfService" : "",
+					"license"        : structNew( "ordered" ),
+					"contact"        : structNew( "ordered" )
+				}
 			},
-			{ "servers" 		: [] },
-			{ "paths"           : structNew( "ordered" ) },
-			{ "components"      : structNew( "ordered" ) },
-			{ "security" 		: [] },
-			{ "tags" 			: [] }
+			{ "servers" : [] },
+			{ "paths" : structNew( "ordered" ) },
+			{ "components" : structNew( "ordered" ) },
+			{ "security" : [] },
+			{ "tags" : [] }
 		];
 
-		for( var templateDefault  in  templateDefaults ){
+		for ( var templateDefault in templateDefaults ) {
 			template.putAll( templateDefault );
 		}
 
@@ -49,26 +49,22 @@ component name="OpenAPIUtil" accessors="true" {
 	 * Create a new method representation
 	 */
 	any function newMethod(){
-		var method 	= structNew( "ordered" );
+		var method  = structNew( "ordered" );
 		var descMap = structNew( "ordered" );
 
 		descMap.put( "description", "" );
 
-		//Other supported options are requestBody and tag will be added runtime
-		var methodDefaults   = [
-			{ "summary"    	: "" },
-			{ "tags" 		: [] },
-			{ "description"	: "" },
-			{ "operationId"	: "" },
-			{ "parameters" 	: [] },
-			{
-				"responses"  : {
-					"default": descMap
-				}
-			}
+		// Other supported options are requestBody and tag will be added runtime
+		var methodDefaults = [
+			{ "summary" : "" },
+			{ "tags" : [] },
+			{ "description" : "" },
+			{ "operationId" : "" },
+			{ "parameters" : [] },
+			{ "responses" : { "default" : descMap } }
 		];
 
-		for( var methodDefault in methodDefaults ){
+		for ( var methodDefault in methodDefaults ) {
 			method.putAll( methodDefault );
 		}
 
@@ -79,7 +75,14 @@ component name="OpenAPIUtil" accessors="true" {
 	 * Get an array of default methods
 	 */
 	array function defaultMethods(){
-		return [ "GET", "PUT", "POST" , "PATCH" , "DELETE" , "HEAD" ];
+		return [
+			"GET",
+			"PUT",
+			"POST",
+			"PATCH",
+			"DELETE",
+			"HEAD"
+		];
 	}
 
 	/**
@@ -95,15 +98,14 @@ component name="OpenAPIUtil" accessors="true" {
 	 * @URLPath
 	 */
 	string function translatePath( required string URLPath ){
-		var pathArray = listToArray( arguments.URLPath, '/' );
-		for( var i=1; i <= arrayLen( pathArray ); i++ ){
-			if( left( pathArray[ i ], 1 ) == ':' ){
+		var pathArray = listToArray( arguments.URLPath, "/" );
+		for ( var i = 1; i <= arrayLen( pathArray ); i++ ) {
+			if ( left( pathArray[ i ], 1 ) == ":" ) {
 				pathArray[ i ] = "{" & replace( pathArray[ i ], ":", "" ) & "}";
 			}
 		}
 
 		return "/" & arrayToList( pathArray, "/" );
-
 	}
 
 	/**
@@ -112,38 +114,32 @@ component name="OpenAPIUtil" accessors="true" {
 	 * @param Object Map  	The Java map object or array to be converted
 	 */
 	function toCF( map ){
+		if ( isNull( arguments.map ) ) return;
 
-		if( isNull( arguments.map ) ) return;
+		// if we're in a loop iteration and the array item is simple, return it
+		if ( isSimpleValue( arguments.map ) ) return arguments.map;
 
-		//if we're in a loop iteration and the array item is simple, return it
-		if( isSimpleValue( arguments.map ) ) return arguments.map;
-
-		if( isArray( map ) ){
+		if ( isArray( map ) ) {
 			var cfObj = [];
 
-			for( var obj in arguments.map ){
+			for ( var obj in arguments.map ) {
 				arrayAppend( cfObj, toCF( obj ) );
 			}
-
 		} else {
-
 			var cfObj = {};
 
-			try{
+			try {
 				cfObj.putAll( arguments.map );
-
-			} catch ( any e ){
-
+			} catch ( any e ) {
 				return arguments.map;
 			}
 
 			// loop our keys to ensure first-level items with sub-documents objects are converted
-			for( var key in cfObj ){
-
-				if(
+			for ( var key in cfObj ) {
+				if (
 					!isNull( cfObj[ key ] ) &&
 					( isArray( cfObj[ key ] ) || isStruct( cfObj[ key ] ) )
-				){
+				) {
 					cfObj[ key ] = toCF( cfObj[ key ] );
 				}
 			}

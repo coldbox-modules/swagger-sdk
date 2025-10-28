@@ -11,6 +11,7 @@
         "rewrites":{
             "enable":"true"
         },
+		"webroot":"test-harness",
         "aliases":{
             "/moduleroot/swagger-sdk":"../"
         }
