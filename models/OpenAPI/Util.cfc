@@ -60,6 +60,7 @@ component name="OpenAPIUtil" accessors="true" {
 			{ "tags" : [] },
 			{ "description" : "" },
 			{ "operationId" : "" },
+			{ "deprecated" : false },
 			{ "parameters" : [] },
 			{ "responses" : { "default" : descMap } }
 		];
