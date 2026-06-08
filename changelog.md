@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 ## [Unreleased]
+### Added
+
+* `newMethod()` now includes a `deprecated` flag on the operation template, defaulting to `false`, so generated operation objects declare the standard OpenAPI `deprecated` field.
 
 ## [3.0.0] => 2024-MAY-30
 ### Fixed

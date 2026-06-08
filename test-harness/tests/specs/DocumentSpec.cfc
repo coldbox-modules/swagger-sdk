@@ -58,6 +58,16 @@ component extends="tests.resources.BaseOpenAPISpec" {
 			} );
 		} );
 
+		describe( "Operation template tests", function(){
+			it( "Tests that newMethod() includes a deprecated flag defaulting to false", function(){
+				var method = getInstance( "OpenAPIUtil@SwaggerSDK" ).newMethod();
+
+				expect( method ).toBeStruct().toHaveKey( "deprecated" );
+				expect( method[ "deprecated" ] ).toBeBoolean();
+				expect( method[ "deprecated" ] ).toBeFalse();
+			} );
+		} );
+
 		describe( "Core functionality tests", function(){
 			it( "Tests that an attempt to locate an invalid path with return a $ref object", function(){
 				var DocumentObject = getInstance( "OpenAPIDocument@SwaggerSDK" ).init( VARIABLES.testDocument );
