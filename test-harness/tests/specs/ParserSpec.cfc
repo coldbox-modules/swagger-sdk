@@ -17,6 +17,89 @@ component extends="tests.resources.BaseOpenAPISpec" {
 				runParserTypeChecks( YAMLParser );
 				runParserRecursionTests( YAMLParser );
 			} );
+
+			it( "resolves relative ./schema $refs without hanging when the same responses file is reused", function(){
+				var docPath = expandPath( "/tests/resources/refSafety/shared/doc.yml" );
+				expect( fileExists( docPath ) ).toBeTrue();
+
+				var parser = getInstance( "OpenAPIParser@SwaggerSDK" ).init( docPath );
+				runParserTypeChecks( parser );
+
+				var normalized = parser.getNormalizedDocument();
+				expect( normalized ).toHaveKey( "paths" );
+				expect( normalized.paths ).toHaveKey( "/items" );
+				expect( normalized.paths ).toHaveKey( "/items/{id}" );
+
+				var itemsGet = normalized.paths[ "/items" ].get;
+				expect( itemsGet.responses ).toHaveKey( "200" );
+				expect( itemsGet.responses[ "200" ].content[ "application/json" ].schema ).toHaveKey( "properties" );
+				expect( itemsGet.responses[ "200" ].content[ "application/json" ].schema.properties ).toHaveKey( "id" );
+
+				// Shared error schema should be inlined for both 400 and 500
+				expect( itemsGet.responses[ "400" ].content[ "application/json" ].schema.properties ).toHaveKey(
+					"error"
+				);
+				expect( itemsGet.responses[ "500" ].content[ "application/json" ].schema.properties ).toHaveKey(
+					"error"
+				);
+
+				// Reused responses.yml on a second path must also resolve (cache path)
+				expect(
+					normalized.paths[ "/items/{id}" ].get.responses[ "200" ].content[ "application/json" ].schema.properties
+				).toHaveKey( "name" );
+			} );
+
+			it( "does not recurse forever when YAML files contain circular $refs", function(){
+				var docPath = expandPath( "/tests/resources/refSafety/cycles/doc.yml" );
+				expect( fileExists( docPath ) ).toBeTrue();
+
+				var parser     = getInstance( "OpenAPIParser@SwaggerSDK" ).init( docPath );
+				var normalized = parser.getNormalizedDocument();
+
+				expect( normalized ).toHaveKey( "paths" );
+				expect( normalized.paths ).toHaveKey( "/cycle" );
+				var schema = normalized.paths[ "/cycle" ].get.responses[ "200" ].content[ "application/json" ].schema;
+				expect( schema ).toBeStruct();
+				// Either fully inlined properties, or a preserved cycle marker $ref — must not hang either way
+				expect( structKeyExists( schema, "properties" ) || structKeyExists( schema, "$ref" ) ).toBeTrue();
+			} );
+
+			it( "resolves absolute filesystem $ref paths without joining them onto the base document directory", function(){
+				var fixtureDir = expandPath( "/tests/resources/refSafety" );
+				var schemaPath = fixtureDir & "/absoluteSchema.yml";
+				var docPath    = fixtureDir & "/absoluteDoc.yml";
+
+				fileWrite(
+					docPath,
+					"openapi: ""3.0.2""
+info:
+  title: Absolute ref fixture
+  version: ""1.0.0""
+paths:
+  /abs:
+    get:
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ""#schemaPath#""
+"
+				);
+
+				try {
+					var parser     = getInstance( "OpenAPIParser@SwaggerSDK" ).init( docPath );
+					var normalized = parser.getNormalizedDocument();
+					var schema     = normalized.paths[ "/abs" ].get.responses[ "200" ].content[ "application/json" ].schema;
+					expect( schema ).toHaveKey( "properties" );
+					expect( schema.properties ).toHaveKey( "ok" );
+				} finally {
+					if ( fileExists( docPath ) ) {
+						fileDelete( docPath );
+					}
+				}
+			} );
 		} );
 	}
 

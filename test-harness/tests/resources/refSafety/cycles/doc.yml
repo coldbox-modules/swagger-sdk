@@ -1,0 +1,14 @@
+openapi: "3.0.2"
+info:
+  title: Circular ref fixture
+  version: "1.0.0"
+paths:
+  /cycle:
+    get:
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './a.yml'

@@ -92,34 +92,59 @@ component name="OpenAPIDocument" accessors="true" {
 	 * @param APIDoc 	The document to normalized.  Defaults to the entity document
 	 **/
 	function getNormalizedDocument( any APIDoc = this.getDocument() ){
+		return normalizeDocument( arguments.APIDoc, {} );
+	}
+
+	/**
+	 * Internal normalize with identity-based cycle detection (shared $ref graphs / Parser nests).
+	 */
+	private function normalizeDocument(
+		required any APIDoc,
+		required struct visited
+	){
 		if ( isArray( arguments.APIDoc ) ) {
 			return arrayMap( arguments.APIDoc, function( item ){
-				return getNormalizedDocument( item );
+				return normalizeDocument( item, visited );
 			} );
-		} else if (
-			isObject( arguments.APIDoc ) && findNoCase(
-				"Parser",
-				getMetadata( arguments.APIDoc ).name
-			)
-		) {
-			if (
-				!structKeyExists(
-					arguments.APIDoc,
-					"getDocumentObject"
-				)
-			) {
-				throwForeignObjectTypeException( arguments.APIDoc );
-				throw(
-					type    = "SwaggerSDK.NormalizationException",
-					message = "SwaggerSDK doesn't know what do with an object of type #getMetadata( arguments.APIDoc ).name#."
-				);
-			}
+		}
 
-			return arguments.APIDoc.getDocumentObject().getNormalizedDocument();
-		} else if ( isStruct( arguments.APIDoc ) ) {
+		if ( isObject( arguments.APIDoc ) ) {
+			var metaName = "";
+			try {
+				metaName = getMetadata( arguments.APIDoc ).name;
+			} catch ( any e ) {
+				metaName = "";
+			}
+			if ( findNoCase( "Parser", metaName ) ) {
+				if (
+					!structKeyExists(
+						arguments.APIDoc,
+						"getDocumentObject"
+					)
+				) {
+					throwForeignObjectTypeException( arguments.APIDoc );
+					throw(
+						type    = "SwaggerSDK.NormalizationException",
+						message = "SwaggerSDK doesn't know what do with an object of type #metaName#."
+					);
+				}
+
+				return arguments.APIDoc.getDocumentObject().getNormalizedDocument();
+			}
+			// Non-Parser objects (including Java types) pass through unchanged
+			return arguments.APIDoc;
+		}
+
+		if ( isStruct( arguments.APIDoc ) ) {
+			var visitKey = createObject( "java", "java.lang.System" ).identityHashCode( arguments.APIDoc );
+			if ( structKeyExists( arguments.visited, visitKey ) ) {
+				return arguments.APIDoc;
+			}
+			arguments.visited[ visitKey ] = true;
+
 			return structMap( arguments.APIDoc, function( key, value ){
 				// allow explicit nulls in sample docs to pass through
-				return !isNull( value ) ? getNormalizedDocument( value ) : javacast( "null", 0 );
+				return !isNull( value ) ? normalizeDocument( value, visited ) : javacast( "null", 0 );
 			} );
 		}
 
