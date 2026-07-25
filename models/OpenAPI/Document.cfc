@@ -74,7 +74,10 @@ component name="OpenAPIDocument" accessors="true" {
 	 * Convenience method to return a YAML string of the normalized document
 	 **/
 	function asYAML(){
-		return server.keyExists( "boxlang" ) ? yamlSerialize( getNormalizedDocument() ) : variables.jLoader
+		if ( canUseBoxlangYamlBifs() ) {
+			return yamlSerialize( getNormalizedDocument() );
+		}
+		return variables.jLoader
 			.create( "org.yaml.snakeyaml.Yaml" )
 			.dump( getNormalizedDocument() );
 	}
@@ -92,34 +95,40 @@ component name="OpenAPIDocument" accessors="true" {
 	 * @param APIDoc 	The document to normalized.  Defaults to the entity document
 	 **/
 	function getNormalizedDocument( any APIDoc = this.getDocument() ){
+		return normalizeDocument( arguments.APIDoc, {} );
+	}
+
+	/**
+	 * Internal normalize with identity-based cycle detection (shared $ref graphs / Parser nests).
+	 */
+	private function normalizeDocument(
+		required any APIDoc,
+		required struct visited
+	){
 		if ( isArray( arguments.APIDoc ) ) {
 			return arrayMap( arguments.APIDoc, function( item ){
-				return getNormalizedDocument( item );
+				return normalizeDocument( item, visited );
 			} );
-		} else if (
-			isObject( arguments.APIDoc ) && findNoCase(
-				"Parser",
-				getMetadata( arguments.APIDoc ).name
-			)
-		) {
-			if (
-				!structKeyExists(
-					arguments.APIDoc,
-					"getDocumentObject"
-				)
-			) {
-				throwForeignObjectTypeException( arguments.APIDoc );
-				throw(
-					type    = "SwaggerSDK.NormalizationException",
-					message = "SwaggerSDK doesn't know what do with an object of type #getMetadata( arguments.APIDoc ).name#."
-				);
-			}
+		}
 
-			return arguments.APIDoc.getDocumentObject().getNormalizedDocument();
-		} else if ( isStruct( arguments.APIDoc ) ) {
+		if ( isObject( arguments.APIDoc ) ) {
+			if ( isNestedOpenAPIParser( arguments.APIDoc ) ) {
+				return arguments.APIDoc.getDocumentObject().getNormalizedDocument();
+			}
+			// Non-Parser objects (including Java types) pass through unchanged
+			return arguments.APIDoc;
+		}
+
+		if ( isStruct( arguments.APIDoc ) ) {
+			var visitKey = createObject( "java", "java.lang.System" ).identityHashCode( arguments.APIDoc );
+			if ( structKeyExists( arguments.visited, visitKey ) ) {
+				return arguments.APIDoc;
+			}
+			arguments.visited[ visitKey ] = true;
+
 			return structMap( arguments.APIDoc, function( key, value ){
 				// allow explicit nulls in sample docs to pass through
-				return !isNull( value ) ? getNormalizedDocument( value ) : javacast( "null", 0 );
+				return !isNull( value ) ? normalizeDocument( value, visited ) : javacast( "null", 0 );
 			} );
 		}
 
@@ -155,14 +164,37 @@ component name="OpenAPIDocument" accessors="true" {
 	/********************************************************************************/
 
 	/**
-	 * Throws a foreign object type exception if detected when normalizing a document
-	 * @param UnKnownObject 		The foreign object detected
-	 **/
-	private function throwForeignObjectTypeException( required any UnKnownObject ){
-		throw(
-			type    = "SwaggerSDK.ForeignObjectException",
-			message = "SwaggerSDK doesn't know what do with an object of type #getMetadata( UnKnownObject ).name#."
-		);
+	 * Detect nested OpenAPIParser CFCs without getMetadata() (unsafe on Java / BoxLang proxies).
+	 * Prefer isInstanceOf; duck-type on the normalization entry points as a fallback.
+	 */
+	private boolean function isNestedOpenAPIParser( required any value ){
+		try {
+			if (
+				isInstanceOf(
+					arguments.value,
+					"SwaggerSDK.models.OpenAPI.Parser"
+				)
+			) {
+				return true;
+			}
+		} catch ( any e ) {
+			// isInstanceOf can throw on some non-CFC hosts; fall through to duck-type
+		}
+
+		return structKeyExists( arguments.value, "getDocumentObject" )
+			&& structKeyExists( arguments.value, "getNormalizedDocument" );
+	}
+
+	/**
+	 * Prefer bx-yaml BIFs when present; otherwise use the shipped SnakeYAML jar.
+	 */
+	private boolean function canUseBoxlangYamlBifs(){
+		if ( !server.keyExists( "boxlang" ) ) {
+			return false;
+		}
+		var functions = getFunctionList();
+		return structKeyExists( functions, "yamlDeserialize" )
+			&& structKeyExists( functions, "yamlSerialize" );
 	}
 
 }

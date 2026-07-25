@@ -1,0 +1,18 @@
+200:
+  description: OK
+  content:
+    application/json:
+      schema:
+        $ref: './schema.yml'
+400:
+  description: Bad Request
+  content:
+    application/json:
+      schema:
+        $ref: './error.yml'
+500:
+  description: Server Error
+  content:
+    application/json:
+      schema:
+        $ref: './error.yml'

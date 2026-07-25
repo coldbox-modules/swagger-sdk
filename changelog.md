@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ----
 ## [Unreleased]
 
+### Fixed
+
+- BoxLang: avoid `isStruct(cfc)` when flattening nested OpenAPIParser instances (StructCasterLoose hang)
+- Break infinite recursion in `$ref` / `$extend` walks via request-scoped parse cache and identity-based visited sets
+- Resolve absolute `$ref` paths with `expandPath` instead of concatenating onto the current document directory (prevents `//resources/...` and `.../auth//resources/...` paths)
+- BoxLang: fall back to shipped SnakeYAML when `bx-yaml` BIFs (`yamlDeserialize` / `yamlSerialize`) are not installed
+- BoxLang: load YAML via `fileRead` + string parse (not `FileInputStream`) and prefer `expandPath` for web-root absolute `$ref`s like `/resources/...`
+
+### Added
+
+- Regression specs for shared relative `$ref`s, circular file `$ref`s, and absolute filesystem `$ref`s
+
 ## [3.0.0] => 2024-MAY-30
 ### Fixed
 
