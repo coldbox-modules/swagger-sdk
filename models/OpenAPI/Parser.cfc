@@ -515,17 +515,19 @@ component name="OpenAPIParser" accessors="true" {
 
 	/**
 	 * Load a YAML/YML file into a CFML struct/array graph.
+	 * Always read via CF fileRead so web-root absolute paths (e.g. /resources/...)
+	 * resolve the same way as fileExists; SnakeYAML then parses the string
+	 * (avoid java.io.FileInputStream, which only understands real FS paths).
 	 */
 	private any function loadYamlFile( required string path ){
+		var yamlText = fileRead( arguments.path );
+
 		if ( canUseBoxlangYamlBifs() ) {
-			return yamlDeserialize( fileRead( arguments.path ) );
+			return yamlDeserialize( yamlText );
 		}
 
-		var YAMLLoader  = jLoader.create( "org.yaml.snakeyaml.Yaml" );
-		var IOFile      = jLoader.create( "java.io.File" ).init( arguments.path );
-		var InputStream = jLoader.create( "java.io.FileInputStream" ).init( IOFile );
-
-		return getUtils().toCF( YAMLLoader.load( InputStream ) );
+		var YAMLLoader = jLoader.create( "org.yaml.snakeyaml.Yaml" );
+		return getUtils().toCF( YAMLLoader.load( yamlText ) );
 	}
 
 	/**
@@ -572,8 +574,9 @@ component name="OpenAPIParser" accessors="true" {
 	}
 
 	/**
-	 * Resolve an external file $ref to an absolute filesystem path.
-	 * Prefer absolute/web-root paths via expandPath; only join to the base document directory for relatives.
+	 * Resolve an external file $ref to a path CF can read.
+	 * Prefer expandPath for web-root absolute paths (/resources/...) so Java and CF
+	 * agree; only accept a raw absolute path when it exists as a real filesystem path.
 	 */
 	private string function resolveExternalFilePath( required string filePath ){
 		var candidate = "";
@@ -588,10 +591,8 @@ component name="OpenAPIParser" accessors="true" {
 				arguments.filePath
 			)
 		) {
-			candidate = arguments.filePath;
-			if ( fileExists( candidate ) ) {
-				return candidate;
-			}
+			// Web-root style (/resources/...): expandPath first — CF fileExists may
+			// succeed on the raw path while Java File* constructors fail.
 			try {
 				candidate = expandPath( arguments.filePath );
 				if ( fileExists( candidate ) ) {
@@ -599,6 +600,9 @@ component name="OpenAPIParser" accessors="true" {
 				}
 			} catch ( any e ) {
 				// continue
+			}
+			if ( fileExists( arguments.filePath ) ) {
+				return arguments.filePath;
 			}
 			return "";
 		}

@@ -110,6 +110,57 @@ paths:
 					}
 				}
 			} );
+
+			it( "resolves web-root absolute $ref paths like /resources/... without FileInputStream failures", function(){
+				// Mimics inLeague production refs like /resources/api/team/getActiveTeams.responses.yml
+				var webRootRef = "/tests/resources/refSafety/absoluteSchema.yml";
+				var fixtureDir = expandPath( "/tests/resources/refSafety" );
+				var docPath    = fixtureDir & "/webRootDoc.yml";
+
+				expect( fileExists( expandPath( webRootRef ) ) ).toBeTrue();
+
+				fileWrite(
+					docPath,
+					"openapi: ""3.0.2""
+info:
+  title: Web-root ref fixture
+  version: ""1.0.0""
+paths:
+  /web:
+    get:
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ""#webRootRef#""
+"
+				);
+
+				try {
+					// Force SnakeYAML (production without bx-yaml) on the nested load path
+					var parser = prepareMock( getInstance( "OpenAPIParser@SwaggerSDK" ) );
+					parser.$( "canUseBoxlangYamlBifs" ).$results( false );
+					makePublic( parser, "loadYamlFile" );
+
+					// Direct load of a web-root style path must not use bare FileInputStream
+					var loaded = parser.loadYamlFile( webRootRef );
+					expect( loaded ).toBeStruct();
+					expect( loaded ).toHaveKey( "type" );
+
+					var fullParser = prepareMock( getInstance( "OpenAPIParser@SwaggerSDK" ) );
+					fullParser.$( "canUseBoxlangYamlBifs" ).$results( false );
+					var normalized = fullParser.init( docPath ).getNormalizedDocument();
+					var schema     = normalized.paths[ "/web" ].get.responses[ "200" ].content[ "application/json" ].schema;
+					expect( schema ).toHaveKey( "properties" );
+					expect( schema.properties ).toHaveKey( "ok" );
+				} finally {
+					if ( fileExists( docPath ) ) {
+						fileDelete( docPath );
+					}
+				}
+			} );
 		} );
 	}
 
