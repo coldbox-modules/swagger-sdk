@@ -18,6 +18,16 @@ component extends="tests.resources.BaseOpenAPISpec" {
 				runParserRecursionTests( YAMLParser );
 			} );
 
+			it( "loads YAML via SnakeYAML when BoxLang yamlDeserialize is not available", function(){
+				var parser = prepareMock( getInstance( "OpenAPIParser@SwaggerSDK" ) );
+				makePublic( parser, "loadYamlFile" );
+				parser.$( "canUseBoxlangYamlBifs" ).$results( false );
+
+				var content = parser.loadYamlFile( VARIABLES.TestYAMLFile );
+				expect( content ).toBeStruct();
+				expect( content ).toHaveKey( "openapi" );
+			} );
+
 			it( "resolves relative ./schema $refs without hanging when the same responses file is reused", function(){
 				var docPath = expandPath( "/tests/resources/refSafety/shared/doc.yml" );
 				expect( fileExists( docPath ) ).toBeTrue();

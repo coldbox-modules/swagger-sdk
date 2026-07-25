@@ -58,15 +58,7 @@ component name="OpenAPIParser" accessors="true" {
 				break;
 			case "yaml":
 			case "yml":
-				if ( server.keyExists( "boxlang" ) ) {
-					documentContent = yamlDeserialize( fileRead( DocPath ) );
-				} else {
-					var YAMLLoader  = jLoader.create( "org.yaml.snakeyaml.Yaml" );
-					var IOFile      = jLoader.create( "java.io.File" ).init( DocPath );
-					var InputStream = jLoader.create( "java.io.FileInputStream" ).init( IOFile );
-
-					documentContent = getUtils().toCF( YAMLLoader.load( InputStream ) );
-				}
+				documentContent = loadYamlFile( DocPath );
 				break;
 			case "json":
 				if ( left( DocPath, 4 ) == "http" ) {
@@ -506,6 +498,34 @@ component name="OpenAPIParser" accessors="true" {
 	 */
 	private string function identityKey( required any value ){
 		return createObject( "java", "java.lang.System" ).identityHashCode( arguments.value );
+	}
+
+	/**
+	 * Prefer bx-yaml BIFs when present; otherwise use the shipped SnakeYAML jar.
+	 * BoxLang production often lacks bx-yaml even though server.boxlang is set.
+	 */
+	private boolean function canUseBoxlangYamlBifs(){
+		if ( !server.keyExists( "boxlang" ) ) {
+			return false;
+		}
+		var functions = getFunctionList();
+		return structKeyExists( functions, "yamlDeserialize" )
+			&& structKeyExists( functions, "yamlSerialize" );
+	}
+
+	/**
+	 * Load a YAML/YML file into a CFML struct/array graph.
+	 */
+	private any function loadYamlFile( required string path ){
+		if ( canUseBoxlangYamlBifs() ) {
+			return yamlDeserialize( fileRead( arguments.path ) );
+		}
+
+		var YAMLLoader  = jLoader.create( "org.yaml.snakeyaml.Yaml" );
+		var IOFile      = jLoader.create( "java.io.File" ).init( arguments.path );
+		var InputStream = jLoader.create( "java.io.FileInputStream" ).init( IOFile );
+
+		return getUtils().toCF( YAMLLoader.load( InputStream ) );
 	}
 
 	/**

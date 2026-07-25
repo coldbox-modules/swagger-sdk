@@ -74,7 +74,10 @@ component name="OpenAPIDocument" accessors="true" {
 	 * Convenience method to return a YAML string of the normalized document
 	 **/
 	function asYAML(){
-		return server.keyExists( "boxlang" ) ? yamlSerialize( getNormalizedDocument() ) : variables.jLoader
+		if ( canUseBoxlangYamlBifs() ) {
+			return yamlSerialize( getNormalizedDocument() );
+		}
+		return variables.jLoader
 			.create( "org.yaml.snakeyaml.Yaml" )
 			.dump( getNormalizedDocument() );
 	}
@@ -180,6 +183,18 @@ component name="OpenAPIDocument" accessors="true" {
 
 		return structKeyExists( arguments.value, "getDocumentObject" )
 			&& structKeyExists( arguments.value, "getNormalizedDocument" );
+	}
+
+	/**
+	 * Prefer bx-yaml BIFs when present; otherwise use the shipped SnakeYAML jar.
+	 */
+	private boolean function canUseBoxlangYamlBifs(){
+		if ( !server.keyExists( "boxlang" ) ) {
+			return false;
+		}
+		var functions = getFunctionList();
+		return structKeyExists( functions, "yamlDeserialize" )
+			&& structKeyExists( functions, "yamlSerialize" );
 	}
 
 }
