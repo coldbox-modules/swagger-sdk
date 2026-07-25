@@ -467,7 +467,8 @@ component name="OpenAPIParser" accessors="true" {
 	}
 
 	/**
-	 * Detect OpenAPIParser instances without using isStruct(cfc).
+	 * Detect OpenAPIParser instances without using isStruct(cfc) or getMetadata().
+	 * Prefer isInstanceOf; duck-type on normalization entry points as a fallback.
 	 */
 	private boolean function isParserInstance( required any value ){
 		if ( isNull( arguments.value ) || !isObject( arguments.value ) ) {
@@ -483,20 +484,11 @@ component name="OpenAPIParser" accessors="true" {
 				return true;
 			}
 		} catch ( any e ) {
-			// fall through to metadata name check
+			// isInstanceOf can throw on some non-CFC hosts; fall through to duck-type
 		}
-		try {
-			return findNoCase(
-				"Parser",
-				getMetadata( arguments.value ).name
-			) > 0
-			&& structKeyExists(
-				arguments.value,
-				"getNormalizedDocument"
-			);
-		} catch ( any e ) {
-			return false;
-		}
+
+		return structKeyExists( arguments.value, "getNormalizedDocument" )
+			&& structKeyExists( arguments.value, "getDocumentObject" );
 	}
 
 	/**

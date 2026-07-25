@@ -109,26 +109,7 @@ component name="OpenAPIDocument" accessors="true" {
 		}
 
 		if ( isObject( arguments.APIDoc ) ) {
-			var metaName = "";
-			try {
-				metaName = getMetadata( arguments.APIDoc ).name;
-			} catch ( any e ) {
-				metaName = "";
-			}
-			if ( findNoCase( "Parser", metaName ) ) {
-				if (
-					!structKeyExists(
-						arguments.APIDoc,
-						"getDocumentObject"
-					)
-				) {
-					throwForeignObjectTypeException( arguments.APIDoc );
-					throw(
-						type    = "SwaggerSDK.NormalizationException",
-						message = "SwaggerSDK doesn't know what do with an object of type #metaName#."
-					);
-				}
-
+			if ( isNestedOpenAPIParser( arguments.APIDoc ) ) {
 				return arguments.APIDoc.getDocumentObject().getNormalizedDocument();
 			}
 			// Non-Parser objects (including Java types) pass through unchanged
@@ -180,14 +161,25 @@ component name="OpenAPIDocument" accessors="true" {
 	/********************************************************************************/
 
 	/**
-	 * Throws a foreign object type exception if detected when normalizing a document
-	 * @param UnKnownObject 		The foreign object detected
-	 **/
-	private function throwForeignObjectTypeException( required any UnKnownObject ){
-		throw(
-			type    = "SwaggerSDK.ForeignObjectException",
-			message = "SwaggerSDK doesn't know what do with an object of type #getMetadata( UnKnownObject ).name#."
-		);
+	 * Detect nested OpenAPIParser CFCs without getMetadata() (unsafe on Java / BoxLang proxies).
+	 * Prefer isInstanceOf; duck-type on the normalization entry points as a fallback.
+	 */
+	private boolean function isNestedOpenAPIParser( required any value ){
+		try {
+			if (
+				isInstanceOf(
+					arguments.value,
+					"SwaggerSDK.models.OpenAPI.Parser"
+				)
+			) {
+				return true;
+			}
+		} catch ( any e ) {
+			// isInstanceOf can throw on some non-CFC hosts; fall through to duck-type
+		}
+
+		return structKeyExists( arguments.value, "getDocumentObject" )
+			&& structKeyExists( arguments.value, "getNormalizedDocument" );
 	}
 
 }
