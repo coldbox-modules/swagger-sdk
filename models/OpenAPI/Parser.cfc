@@ -52,14 +52,11 @@ component name="OpenAPIParser" accessors="true" {
 				break;
 			case "yaml":
 			case "yml":
-				if ( server.keyExists( "boxlang" ) ) {
-					documentContent = yamlDeserialize( fileRead( DocPath ) );
+				var yamlText = fileRead( DocPath ); // BoxLang/CF path resolution, no raw Java path
+				if ( server.keyExists( "boxlang" ) && getFunctionList().keyExists( "yamlDeserialize" ) ) {
+					documentContent = yamlDeserialize( yamlText );
 				} else {
-					var YAMLLoader  = jLoader.create( "org.yaml.snakeyaml.Yaml" );
-					var IOFile      = jLoader.create( "java.io.File" ).init( DocPath );
-					var InputStream = jLoader.create( "java.io.FileInputStream" ).init( IOFile );
-
-					documentContent = getUtils().toCF( YAMLLoader.load( InputStream ) );
+					documentContent = getUtils().toCF( jLoader.create( "org.yaml.snakeyaml.Yaml" ).load( yamlText ) );
 				}
 				break;
 			case "json":
@@ -298,24 +295,29 @@ component name="OpenAPIParser" accessors="true" {
 			}
 		}
 
+		// BL-2190: only use the base document's folder when this parser was loaded from a file.
+		// Without one, getDirectoryFromPath() returns "/" and builds paths like "//resources/..."
+		var baseDirectory = ( isNull( getBaseDocumentPath() ) || !len( getBaseDocumentPath() ) )
+			? ""
+			: getDirectoryFromPath( getBaseDocumentPath() );
 		var ReferenceDocument = {};
 
 		try {
 			// Files receive a parser reference
 			if ( left( FilePath, 4 ) == "http" ) {
 				ReferenceDocument = Wirebox.getInstance( "OpenAPIParser@SwaggerSDK" ).init( $ref );
-			} else if ( len( FilePath ) && fileExists( getDirectoryFromPath( getBaseDocumentPath() ) & FilePath ) ) {
+			} else if ( len( FilePath ) && fileExists( baseDirectory & FilePath ) ) {
 				ReferenceDocument = Wirebox
 					.getInstance( "OpenAPIParser@SwaggerSDK" )
-					.init( getDirectoryFromPath( getBaseDocumentPath() ) & $ref );
+					.init( baseDirectory & $ref );
 			} else if ( len( FilePath ) && fileExists( expandPath( FilePath ) ) ) {
 				ReferenceDocument = Wirebox
 					.getInstance( "OpenAPIParser@SwaggerSDK" )
 					.init( expandPath( FilePath ) & ( !isNull( xPath ) ? "##" & xPath : "" ) );
-			} else if ( len( FilePath ) && !fileExists( getDirectoryFromPath( getBaseDocumentPath() ) & FilePath ) ) {
+			} else if ( len( FilePath ) && !fileExists( baseDirectory & FilePath ) ) {
 				throw(
 					type    = "SwaggerSDK.ParserException",
-					message = "File #( getDirectoryFromPath( getBaseDocumentPath() ) & FilePath )# does not exist"
+					message = "File #( baseDirectory & FilePath )# does not exist"
 				);
 			} else if ( !isNull( XPath ) && len( XPath ) ) {
 				ReferenceDocument = getInternalXPath( XPath );

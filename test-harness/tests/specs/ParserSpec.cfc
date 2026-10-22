@@ -17,6 +17,21 @@ component extends="tests.resources.BaseOpenAPISpec" {
 				runParserTypeChecks( YAMLParser );
 				runParserRecursionTests( YAMLParser );
 			} );
+
+			it( "Loads a YAML $ref from an app-relative path when parsing a struct (BL-2190)", function(){
+				// With no base document, the $ref resolves to "//tests/...", which only BoxLang/CF file functions understand
+				var Parser = getInstance( "OpenAPIParser@SwaggerSDK" ).parse( {
+					"openapi"    : "3.0.0",
+					"info"       : { "title" : "BL-2190", "version" : "1.0.0" },
+					"paths"      : {},
+					"components" : { "x-petstore" : { "$ref" : "/tests/resources/petstore/petstore.yaml" } }
+				} );
+
+				var NormalizedDocument = Parser.getNormalizedDocument();
+				expect( NormalizedDocument.components[ "x-petstore" ] ).toBeStruct();
+				expect( NormalizedDocument.components[ "x-petstore" ] ).toHaveKey( "paths" );
+				expect( NormalizedDocument.components[ "x-petstore" ].paths ).toHaveKey( "/pets" );
+			} );
 		} );
 	}
 
